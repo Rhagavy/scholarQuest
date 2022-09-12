@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>ScholarQuest</title>
+    <link href="{% static 'css/stylesheet.css' %}" rel="stylesheet" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,900&display=swap" rel="stylesheet">
+    
+</head>
+<body>
+    <header class="navbar1">
+        <img class="logo" src="{% static 'images/SQLogo5.png' %}">
+        <!-- <h1>SQ</h1> -->
+        <nav>
+            <ul class="nav_links">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Contact Us</a></li>
+                <li><a href="{% url 'register' %}">Start Tracking</a></li>
+                <li><a href="{% url 'profile' %}">Profile</a></li>
+            </ul>
+           
+        </nav>
+        <div class="login">
+            <a href="{% url 'login' %}"><button class="loginButton">LogIn</button></a>
+        </div>   
+    </header>
+    <section>
+        
+        <div class="content">
+            <div>
+                <div class="homeContent">
+                    <!-- <img class="logo1" src="{% static 'images/SQLogo5.png' %}">  -->
+                    <h1>ScholarQuest</h1>
+                    <h3>Plan with success in mind</h3>
+                    <div class="register">
+                        <a href="{% url 'register' %}"><button class="registerButton">Register</button></a>
+                    </div>
+                </div>
+                <div class="loader">Loading</div>
+            </div>
+        </div> 
+        
+    </section>
+    
+    
+    <script src="{% static 'js/main.js' %}" type="text/javascript"></script>
+</body>
+</html>
