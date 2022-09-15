@@ -38,41 +38,114 @@
                 <div class="card" style="border-radius: 15px;">
                     <div class="card-body p-5">
                     <h2 class="fw-bold text-uppercase text-center mb-5">Create an account</h2>
-
-                    <form>
-
+                    {% if form.errors %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <div class="alert alert-danger">
+                                    <strong>{{fieldNames["{{field.name}}"]}}:{{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <form action="{% url 'register' %}" method="POST">
+                        {% csrf_token %}
                         <div class="form-outline mb-4">
-                        <input type="text" id="form3Example1cg" class="form-control form-control-md" />
+                        <input type="text" id="form3Example1cg" class="form-control form-control-sm" name="first_name" />
                         <label class="form-label" for="form3Example1cg">First Name</label>
                         </div>
 
                         <div class="form-outline mb-4">
-                            <input type="email" id="form3Example3cg" class="form-control form-control-md" />
+                            <input type="text" id="form3Example3cg" class="form-control form-control-sm" name="last_name" />
                             <label class="form-label" for="form3Example3cg">Last Name</label>
                         </div>
 
                         <div class="form-outline mb-4">
-                            <input id="form3Example3cg" class="form-control form-control-md" type="date" />
+                            <input type="text" id="form3Example3cg" class="form-control form-control-sm" name="username" />
+                            <label class="form-label" for="form3Example3cg">Unique Display Name</label>
+                        </div>
+
+                        <div class="form-outline mb-4">
+                            <input id="form3Example3cg" class="form-control form-control-sm" type="date" name="dateOfBirth" />
                             <label class="form-label" for="form3Example3cg">Date of Birth</label>
                         </div>
-
+                        
                         <div class="form-outline mb-4">
-                            <input type="email" id="form3Example3cg" class="form-control form-control-md" />
+                            <select class="form-select" aria-label="Default select example" name="postSecondaryInstitution">
+                                <option selected>Select you school</option>
+                                <option value="Algoma University">Algoma University</option>
+                                <option value="2">Algonquin College</option>
+                                <option value="3">Brock University</option>
+                                <option value="4">Cambrian College</option>
+                                <option value="5">Canadore College</option>
+                                <option value="6">Carleton University</option>
+                                <option value="7">Centennial College</option>
+                                <option value="8">Collège Boréal (FR)</option>
+                                <option value="9">Conestoga College</option>
+                                <option value="10">Confederation College </option>
+                                <option value="11">Durham College</option>
+                                <option value="12">Fanshawe College</option>
+                                <option value="13">Fleming College</option>
+                                <option value="14">George Brown College</option>
+                                <option value="15">Georgian College</option>
+                                <option value="16">Humber College</option>
+                                <option value="17">La Cité collégiale (FR)</option>
+                                <option value="18">Lakehead University</option>
+                                <option value="19">Lambton College</option>
+                                <option value="20">Laurentian University</option>
+                                <option value="21">Loyalist College</option>
+                                <option value="22">McMaster University</option>
+                                <option value="23">Mohawk College</option>
+                                <option value="24">Niagara College</option>
+                                <option value="25">Nipissing University</option>
+                                <option value="26">Northern College</option>
+                                <option value="27">Northern Ontario School of Medicine (NOSM) University</option>
+                                <option value="28">OCAD University</option>
+                                <option value="29">Ontario Tech University</option>
+                                <option value="30">Queen’s University</option>
+                                <option value="31">Royal Military College</option>
+                                <option value="32">Sault College	Sault Ste. Marie</option>
+                                <option value="33">Seneca College</option>
+                                <option value="34">Sheridan College</option>
+                                <option value="35">St. Clair College</option>
+                                <option value="36">St. Lawrence College</option>
+                                <option value="37">Toronto Metropolitan University</option>
+                                <option value="38">Trent University</option>
+                                <option value="39">University of Guelph</option>
+                                <option value="40">University of Ottawa</option>
+                                <option value="41">University of Toronto</option>
+                                <option value="42">University of Waterloo</option>
+                                <option value="43">University of Windsor</option>
+                                <option value="44">Université de Hearst</option>
+                                <option value="45">Université de l’Ontario français</option>
+                                <option value="47">Western University</option>
+                                <option value="48">Wilfrid Laurier University</option>
+                                <option value="49">York University</option>
+                                <option value="50">Other</option>
+                            </select>
                             <label class="form-label" for="form3Example3cg">Post Secondary Institution</label>
                         </div>
+                        <!-- <div class="form-outline mb-4">
+                            <input type="email" id="form3Example3cg" class="form-control form-control-sm" name="postSecondaryInstitution"/>
+                            <label class="form-label" for="form3Example3cg">Post Secondary Institution</label>
+                        </div> -->
 
                         <div class="form-outline mb-4">
-                        <input type="email" id="form3Example3cg" class="form-control form-control-md" />
+                        <input type="email" id="form3Example3cg" class="form-control form-control-sm" name="email" />
                         <label class="form-label" for="form3Example3cg">Your Email</label>
                         </div>
 
                         <div class="form-outline mb-4">
-                        <input type="password" id="form3Example4cg" class="form-control form-control-md" />
+                        <input type="password" id="form3Example4cg" class="form-control form-control-sm" name="password1" />
                         <label class="form-label" for="form3Example4cg">Password</label>
                         </div>
 
                         <div class="form-outline mb-4">
-                        <input type="password" id="form3Example4cdg" class="form-control form-control-md" />
+                        <input type="password" id="form3Example4cdg" class="form-control form-control-sm" name="password2"/>
                         <label class="form-label" for="form3Example4cdg">Repeat your password</label>
                         </div>
 
@@ -83,63 +156,15 @@
                         </label>
                         </div> -->
 
-                        <div class="d-flex justify-content-center">
-                        <button type="button"
-                            class="registerButton2">Register</button>
+                        <!-- < class="d-flex justify-content-center"> -->
+                        <input type="submit"class="registerButton2">
                         </div>
-
+                        
                         <p class="text-center text-muted mt-5 mb-0">Already have an account? <a href="{% url 'login' %}"
                             class="fw-bold text-body"><u>Login here</u></a></p>
 
                     </form>
-                        <!-- Algoma University
-                        Algonquin College
-                        Brock University
-                        Cambrian College
-                        Canadore College
-                        Carleton University
-                        Centennial College
-                        Collège Boréal (FR)
-                        Conestoga College
-                        Confederation College
-                        Durham College
-                        Fanshawe College
-                        Fleming College
-                        George Brown College
-                        Georgian College
-                        Humber College
-                        La Cité collégiale (FR)
-                        Lakehead University
-                        Lambton College
-                        Laurentian University
-                        Loyalist College
-                        McMaster University
-                        Mohawk College
-                        Niagara College
-                        Nipissing University
-                        Northern College
-                        Northern Ontario School of Medicine (NOSM) University
-                        OCAD University
-                        Ontario Tech University
-                        Queen’s University
-                        Royal Military College
-                        Sault College	Sault Ste. Marie
-                        Seneca College
-                        Sheridan College
-                        St. Clair College
-                        St. Lawrence College
-                        Toronto Metropolitan University
-                        Trent University
-                        University of Guelph
-                        University of Ottawa
-                        University of Toronto
-                        University of Waterloo
-                        University of Windsor
-                        Université de Hearst
-                        Université de l’Ontario français
-                        Western University
-                        Wilfrid Laurier University
-                        York University -->
+                        
                     </div>
                 </div>
                 </div>

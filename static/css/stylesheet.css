@@ -232,3 +232,10 @@ background: linear-gradient(45deg, #C6426E, #642B73)
 /* .registerForm input{
     font-weight: 900;
 } */
+
+/** PROFILE PAGE **/
+.profileBack{
+    background: #642B73;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(45deg, #C6426E, #642B73);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(45deg, #C6426E, #642B73);
+}

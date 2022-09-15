@@ -15,84 +15,90 @@ from django.core.validators import MinValueValidator,MaxValueValidator
 #     #password =
 #     def __str__(self):
 #         return self.displayName
-# class User(AbstractUser):
-#     id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
-#     displayName = models.CharField(max_length=100,blank=False,null=False)
-#     dateOfBirth = models.DateField(default="1995-01-01")
-#     postSecondaryInstitution = models.CharField(default="Brock University")
-#     email = models.EmailField(unique=True)
+class User(AbstractUser):
+    id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
+    first_name = models.CharField(max_length=200,blank=False,null=False)
+    last_name = models.CharField(max_length=100,blank=False,null=False)
+    dateOfBirth = models.DateField(default="1995-01-01")
+    postSecondaryInstitution = models.CharField(max_length = 300, default="Brock University")
+    email = models.EmailField(unique=True)
     
-#     USERNAME_FIELD: 'email'
 
-#     def __str__(self):
-#         return self.email
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    def __str__(self):
+        return self.email
 
-# class UsageReport(models.Model):
-#     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
-#     createdBy = models.ForeignKey(User,on_delete=models.DO_NOTHING)
-#     dateCreated = models.DateTimeField(auto_now_add=True) 
-#     TYPE_CHOICES = [('daily','Daily'),('monthly','Monthly'),('institution','Institution')]
-#     type = models.CharField(max_length=100,blank=False,null=False,choices=TYPE_CHOICES) 
-#     def __str__(self):
-#         return self.dateCreated
+class UsageReport(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    createdBy = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    dateCreated = models.DateTimeField(auto_now_add=True) 
+    TYPE_CHOICES = [('daily','Daily'),('monthly','Monthly'),('institution','Institution')]
+    type = models.CharField(max_length=100,blank=False,null=False,choices=TYPE_CHOICES) 
+    def __str__(self):
+        return self.dateCreated
 
-# class Forum(models.Model):
-#     id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
-#     title = models.CharField(max_length=200, blank=False,null=False)
-#     content = RichTextField()
-#     #owner = models.ForeignKey(User,on_delete="SET_DEFAULT", default="deleted user")
-#     owner = models.ForeignKey(User,on_delete=models.SET_NULL)
-#     dateCreated = models.DateTimeField(auto_now_add=True)
-#     is_reported = models.BooleanField(default=False)
-        #should there be is_deleted flag to check if forum should be shown in the first place
-#     def __str__(self):
-#         return self.title
+class Forum(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
+    title = models.CharField(max_length=200, blank=False,null=False)
+    content = RichTextField()
+    #owner = models.ForeignKey(User,on_delete="SET_DEFAULT", default="deleted user")
+    owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
+    dateCreated = models.DateTimeField(auto_now_add=True)
+    is_reported = models.BooleanField(default=False)
+    STATUS_CHOICES = [('deleted','Deleted'),('ok','Ok')]
+    status =  models.CharField(max_length = 100,blank=False,null=False,choices=STATUS_CHOICES)
+    #should there be is_deleted flag to check if forum should be shown in the first place
+    def __str__(self):
+        return self.title
 
-# class Comment(models.Model):
-#     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True,editable=False)
-#     owner = models.ForeignKey(User,on_delete=models.SET_NULL)
-#     forum = models.ForeignKey(Forum, on_delete=models.CASCADE)
-#     content = RichTextField()
-#     date = models.DateTimeField(auto_created=True)
-#     is_reported = models.BooleanField(default=False)
-#     def __str__(self):
-#         return self.date
+class Comment(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True,editable=False)
+    owner = models.ForeignKey(User,on_delete=models.SET_NULL, null=True)
+    forum = models.ForeignKey(Forum, on_delete=models.CASCADE)
+    content = RichTextField()
+    date = models.DateTimeField(auto_created=True)
+    is_reported = models.BooleanField(default=False)
+    STATUS_CHOICES = [('deleted','Deleted'),('ok','Ok')]
+    status =  models.CharField(max_length = 100,default= 'ok',blank=False,null=False,choices=STATUS_CHOICES)
+    def __str__(self):
+        return self.date
 
-# class ReportedContent(models.Model):
-#     id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
-#     forum = models.ForeignKey(Forum, on_delete=models.DO_NOTHING)
-#     comment = models.ForeignKey(Comment,null=True,on_delete=models.DO_NOTHING)
-#     reportedBy = models.ForeignKey(User,on_delete=models.DO_NOTHING)
-#     reason = models.CharField(max_length=300)
-#     dateCreated = models.DateTimeField(auto_created=True)
-#     TYPE_CHOICES = [('comment','Comment'), ('forum','Forum')]
-#     type = models.CharField(blank=False,null=False,choices=TYPE_CHOICES)
-#     is_read = models.BooleanField(default=False)
-#     STATUS_CHOICES = [('deleted','Deleted'),('dismissed','Dismissed')]
-#     status =  models.CharField(blank=False,null=False,choices=STATUS_CHOICES)
+class ReportedContent(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
+    forum = models.ForeignKey(Forum, on_delete=models.DO_NOTHING)
+    comment = models.ForeignKey(Comment,null=True,on_delete=models.DO_NOTHING)
+    reportedBy = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    reason = models.CharField(max_length=300)
+    dateCreated = models.DateTimeField(auto_created=True)
+    TYPE_CHOICES = [('comment','Comment'), ('forum','Forum')]
+    type = models.CharField(max_length = 50,blank=False,null=False,choices=TYPE_CHOICES)
+    is_read = models.BooleanField(default=False)
+    STATUS_CHOICES = [('deleted','Deleted'),('dismissed','Dismissed')]
+    status =  models.CharField(max_length = 50,blank=False,null=False,choices=STATUS_CHOICES)
     
-#     # def __str__(self):
-#     #     return self.dateCreated
+    # def __str__(self):
+    #     return self.dateCreated
 
-# class Course(models.Model):
-#     id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
-#     owner = models.ForeignKey(User,on_delete=models.CASCADE)
-#     courseName = models.CharField(max_length=100,blank=False,null=False)
-#     courseCode = models.CharField(max_length=100,blank=False,null=False)
-#     numOfCredits = models.IntegerField(blank=False,null=False)
-#     totalAssignments = models.IntegerField(blank=False,null=False)
-#     totalMidTerms = models.IntegerField(blank=False,null=False)
-#     has_FinalExam = models.BooleanField(default = True, null=False)
-#     def __str__(self):
-#         return self.courseCode
+class Course(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
+    owner = models.ForeignKey(User,on_delete=models.CASCADE)
+    courseName = models.CharField(max_length=100,blank=False,null=False)
+    courseCode = models.CharField(max_length=100,blank=False,null=False)
+    numOfCredits = models.IntegerField(blank=False,null=False)
+    totalAssignments = models.IntegerField(blank=False,null=False)
+    totalMidTerms = models.IntegerField(blank=False,null=False)
+    has_FinalExam = models.BooleanField(default = True, null=False)
+    def __str__(self):
+        return self.courseCode
 
-# class Evaluation(models.Model):
-#     id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
-#     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-#     date = models.DateTimeField(auto_now_add=False)
-#     TYPE_CHOICES = [('assignment','Assignment'), ('midterm','MidTerm'), ('finalexam','FinalExam')]
-#     type = models.CharField(blank=False,null=False,choices=TYPE_CHOICES)
-#     #before passing subtask to this field, join all the subtask with a seperator (new line character)
-#     subtasks = models.CharField(blank=True,null=True)
-#     gradeWeight = models.IntegerField(default=1, validators=[MinValueValidator(1),MaxValueValidator(5)])
+class Evaluation(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=False)
+    TYPE_CHOICES = [('assignment','Assignment'), ('midterm','MidTerm'), ('finalexam','FinalExam')]
+    type = models.CharField(max_length = 50,blank=False,null=False,choices=TYPE_CHOICES)
+    #before passing subtask to this field, join all the subtask with a seperator (new line character)
+    subtasks = models.CharField(max_length = 5000, blank=True,null=True)
+    gradeWeight = models.IntegerField(default=1, validators=[MinValueValidator(1),MaxValueValidator(5)])
 
