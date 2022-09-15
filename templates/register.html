@@ -21,6 +21,7 @@
                     <li><a href="#">Contact Us</a></li>
                     <li><a href="{% url 'register' %}">Start Tracking</a></li>
                     <li><a href="{% url 'profile' %}">Profile</a></li>
+                    <li><a href="{% url 'createCourse' %}">Create Course</a></li>
                 </ul>
                
             </nav>
@@ -38,11 +39,11 @@
                 <div class="card" style="border-radius: 15px;">
                     <div class="card-body p-5">
                     <h2 class="fw-bold text-uppercase text-center mb-5">Create an account</h2>
-                    {% if form.errors %}
+                    <!-- {% if form.errors %}
                         {% for field in form %}
                             {% for error in field.errors %}
                                 <div class="alert alert-danger">
-                                    <strong>{{fieldNames["{{field.name}}"]}}:{{ error|escape }}</strong>
+                                    <strong>{{field.first_name.errors}}:{{ error|escape }}</strong>
                                 </div>
                             {% endfor %}
                         {% endfor %}
@@ -51,7 +52,7 @@
                                 <strong>{{ error|escape }}</strong>
                             </div>
                         {% endfor %}
-                    {% endif %}
+                    {% endif %} -->
                     <form action="{% url 'register' %}" method="POST">
                         {% csrf_token %}
                         <div class="form-outline mb-4">

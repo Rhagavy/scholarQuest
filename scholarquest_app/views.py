@@ -64,5 +64,7 @@ def registerPage (request):
 
 def profilePage(request):
     return render(request, 'profile.html')
-
+    
+def courseCreation(request):
+    return render (request, 'create_course.html')
 
