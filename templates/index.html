@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>ScholarQuest</title>
-    <link href="{% static 'css/stylesheet.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/index.css' %}" rel="stylesheet" type="text/css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,900&display=swap" rel="stylesheet">
@@ -16,17 +16,23 @@
         <nav>
             <ul class="nav_links">
                 <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="#">About Us</a></li>
-                <li><a href="#">Contact Us</a></li>
+                <!-- <li><a href="#">About Us</a></li>
+                <li><a href="#">Contact Us</a></li> -->
                 <li><a href="{% url 'register' %}">Start Tracking</a></li>
                 <li><a href="{% url 'profile' %}">Profile</a></li>
                 <li><a href="{% url 'createCourse' %}">Create Course</a></li>
             </ul>
            
         </nav>
-        <div class="login">
-            <a href="{% url 'login' %}"><button class="loginButton">LogIn</button></a>
-        </div>   
+        {% if request.user.is_authenticated  %}
+            <div class="login">
+                <a href="{% url 'logout' %}"><button class="loginButton">Logout</button></a>
+            </div>
+        {% else %}
+            <div class="login">
+                <a href="{% url 'login' %}"><button class="loginButton">Login</button></a>
+            </div>
+        {% endif %} 
     </header>
     <section>
         

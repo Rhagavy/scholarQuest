@@ -3,6 +3,7 @@ from django.forms import ModelForm
 from .models import User
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
+from django.template.defaulttags import register
 
 # Create your views here.
 
@@ -11,10 +12,10 @@ def homePage(request):
 
 def loginPage(request):
 
-    if request.user.is_authenticated:
-        return redirect('homePage')
+    #if request.user.is_authenticated:
+        #return redirect('homePage')
 
-    if request.method == 'Post':
+    if request.method == 'POST':
         
         print(request.POST)
         email = request.POST['email']
@@ -25,7 +26,7 @@ def loginPage(request):
         except:
             print( 'Email does not exist')
             #add flash message
-
+        print("hi")
         user = authenticate(request,username = email, password = password)
         #send user to their dashboard page
         if user is not None:
@@ -35,7 +36,13 @@ def loginPage(request):
         else:
             print('Email or password is incorrect')
             #add flash message  
-    return render(request, 'login.html')
+    return render(request, 'registration/login.html')
+
+def logoutUser(request):
+    logout(request)
+    return redirect ('login')
+
+
 
 class RegisterForm(UserCreationForm):
     class Meta:
@@ -60,7 +67,7 @@ def registerPage (request):
             form.save()
             print("form saved")
     fieldNames = {'first_name':"First Name",'last_name':"Last Name", 'username':"Forum Display Name",'dateOfBirth':"Date of Birth",'postSecondaryInstitution':"Post Secondary Institution", 'email':"Email Address", 'password1':"Password", 'password2':"Re-type Password"}
-    return render(request, 'register.html', {"form":form,"fieldNames":fieldNames})
+    return render(request, 'registration/register.html', {"form":form,"fieldNames":fieldNames})
 
 def profilePage(request):
     return render(request, 'profile.html')
@@ -68,3 +75,6 @@ def profilePage(request):
 def courseCreation(request):
     return render (request, 'create_course.html')
 
+@register.filter
+def get_value(dictionary, key):
+    return dictionary.get(key)

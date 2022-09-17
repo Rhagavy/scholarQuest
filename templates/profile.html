@@ -16,18 +16,24 @@
             <nav>
                 <ul class="nav_links">
                     <li><a href="{% url 'home' %}">Home</a></li>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact Us</a></li>
+                    <!-- <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact Us</a></li> -->
                     <li><a href="{% url 'register' %}">Start Tracking</a></li>
                     <li><a href="{% url 'profile' %}">Profile</a></li>
                     <li><a href="{% url 'createCourse' %}">Create Course</a></li>
                 </ul>
                
             </nav>
-            <div class="login">
-                <a href="{% url 'login' %}"><button class="loginButton">LogIn</button></a>
-            </div>   
-        </header>
+            {% if request.user.is_authenticated  %}
+                <div class="login">
+                    <a href="{% url 'logout' %}"><button class="loginButton">Logout</button></a>
+                </div>
+            {% else %}
+                <div class="login">
+                    <a href="{% url 'login' %}"><button class="loginButton">Login</button></a>
+                </div>
+            {% endif %} 
+            </header>
             <div class="container mt-5">
         
                 <div class="row d-flex justify-content-center">

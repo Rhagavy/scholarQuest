@@ -1,5 +1,7 @@
 <!DOCTYPE html>
+{% block content %}
 {% load static %}
+
 
 <html>
     <head>
@@ -11,27 +13,32 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     </head>
 
-    <body>
+    <body class="body">
         <header class="navbar">
             <img class="logo" src="{% static 'images/SQLogo5.png' %}">
             <nav>
                 <ul class="nav_links">
                     <li><a href="{% url 'home' %}">Home</a></li>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact Us</a></li>
+                    <!-- <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact Us</a></li> -->
                     <li><a href="{% url 'register' %}">Start Tracking</a></li>
                     <li><a href="{% url 'profile' %}">Profile</a></li>
                     <li><a href="{% url 'createCourse' %}">Create Course</a></li>
                 </ul>
                
             </nav>
-            <div class="login">
-                <a href="{% url 'login' %}"><button class="loginButton">LogIn</button></a>
-            </div>   
+            {% if request.user.is_authenticated  %}
+                <div class="login">
+                    <a href="{% url 'logout' %}"><button class="loginButton">Logout</button></a>
+                </div>
+            {% else %}
+                <div class="login">
+                    <a href="{% url 'login' %}"><button class="loginButton">Login</button></a>
+                </div>
+            {% endif %} 
         </header>
 
-        <div class="vh-100 bg-image registerForm"
-        style="background-image: url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp');">
+        <div class="vh-100 bg-image registerForm">
         <div class="mask d-flex align-items-center h-100 gradient-custom-3">
             <div class="container h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
@@ -39,6 +46,31 @@
                 <div class="card" style="border-radius: 15px;">
                     <div class="card-body p-5">
                     <h2 class="fw-bold text-uppercase text-center mb-5">Create an account</h2>
+                    {% if form.errors %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <!-- <div class="alert alert-danger">
+                                    <strong>{{fieldNames|get_value:field.name}}: {{ error|escape }}</strong>
+                                </div> -->
+
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <strong>{{fieldNames|get_value:field.name}}: {{ error|escape }}</strong>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                                
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <!-- <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div> -->
+
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                <strong>>{{ error|escape }}</strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                     <!-- {% if form.errors %}
                         {% for field in form %}
                             {% for error in field.errors %}
@@ -63,6 +95,7 @@
                         <div class="form-outline mb-4">
                             <input type="text" id="form3Example3cg" class="form-control form-control-sm" name="last_name" />
                             <label class="form-label" for="form3Example3cg">Last Name</label>
+                            <span>{{form.last_name.errors}}</span>
                         </div>
 
                         <div class="form-outline mb-4">
@@ -158,7 +191,7 @@
                         </div> -->
 
                         <!-- < class="d-flex justify-content-center"> -->
-                        <input type="submit"class="registerButton2">
+                        <input type="submit"class="registerButton2" value="Register">
                         </div>
                         
                         <p class="text-center text-muted mt-5 mb-0">Already have an account? <a href="{% url 'login' %}"
@@ -175,5 +208,6 @@
         </div>
     </body>
 
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 </html>
+{% endblock %}

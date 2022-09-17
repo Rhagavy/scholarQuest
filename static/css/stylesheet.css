@@ -9,11 +9,23 @@ body, html {
     
 }
 
+/* html{
+    height: 100%;
+} */
+
+.body{
+    /* height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed; */
+    background: #C6426E;
+
+    background: -webkit-linear-gradient(45deg, #C6426E, #642B73);
+
+    background: linear-gradient(45deg, #C6426E, #642B73) fixed;
+}
 
 /**NAVBAR STARTS**/
-li, a, button {
-    text-decoration: none;
-}
 .logo{
     padding: 0px 0px 0px 50px;
     height: 85px;
@@ -46,8 +58,14 @@ header{
     /* padding: 30px 10%; */
 }
 
+li, a, button {
+    text-decoration: none;
+    
+}
+
 .nav_links{
     list-style: none;
+    
 }
 .nav_links li{
     display: inline-block;
@@ -69,120 +87,6 @@ header{
 /**NAVBAR ENDS**/
 
 
-
-
-
-/** HOME PAGE STARTS **/
-.homeContent h1{
-    text-align: center;
-    color: #fefdfd;
-}
-.homeContent h3{
-    text-align: center;
-    color: #fefdfd;
-}
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Playfair Display', serif;
-    align-items: center;
-    
-}
-section {
-    position: relative;
-    width: 100%;
-    height: 95vh;
-    background: #642B73;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(45deg, #C6426E, #642B73);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(45deg, #C6426E, #642B73); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.content{
-    position: relative;
-    max-width: 900px;
-    text-align: center;
- }
-section:before{
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 200px;
-    background: #fff;  /* fallback for old browsers */
-    clip-path: polygon(100% 0,0 100%, 100% 100%);
-}
-.content h1 {
-    margin: 0;
-    padding: 0;
-    color: #fefdfd;
-    font-size: 7em;
-}
-
-.content h3 {
-    margin: 0;
-    padding: 0;
-    color: #fefdfd;
-    font-size: 4em;
-    font-style: italic;
-}
-.registerButton{
-    font-size: 1em;
-    font-weight: 900;
-    font-family: 'Playfair Display', serif;
-    padding: 10px 30px;
-    background-color: #666666;
-    color: #fefdfd;
-    border: black;
-    border-radius: 4px;
-    transition: all 0.3s ease 0s;
-}
-.registerButton:hover{
-    background-color: #595959;
-}
-.register{
-    padding-top: 50px;
-}
-/** LOADER STARTS**/
-.loader{
-    
-    font-size: 40px;
-    text-align: center;
-    color: #fefdfd;
-    font-style: italic;
-}
-.loader::after{
-    content: '\2026';
-    display: inline-block;
-    overflow: hidden;
-    vertical-align: bottom;
-    animation: dots steps(4, end) 2s infinite;
-    width: 0;
-}
-
-@keyframes dots {
-    to{
-        width: 1.05em;
-    }
-}
-
-.homeContent{
-    opacity: 0;
-    display: none;
-    transition: opacity 2s ease-in;
-}
-
-.navbar1{
-    opacity: 0;
-    display: none;
-    transition: opacity 2s ease-in;  
-}
-/** LOADER ENDS **/
-/** HOME PAGE ENDS **/
-
-
 /** LOGIN PAGE STARTS **/
 .loginImage{
     padding-top: 150px;
@@ -195,26 +99,21 @@ section:before{
 
 
 /** REGISTER PAGE STARTS **/
-.gradient-custom-3 {
-/* fallback for old browsers */
+/* .gradient-custom-3 {
 background: #C6426E;
 
-/* Chrome 10-25, Safari 5.1-6 */
 background: -webkit-linear-gradient(45deg, #C6426E, #642B73);
 
-/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 background: linear-gradient(45deg, #C6426E, #642B73)
 }
 .gradient-custom-4 {
-/* fallback for old browsers */
+
 background: #C6426E;
 
-/* Chrome 10-25, Safari 5.1-6 */
 background: -webkit-linear-gradient(45deg, #C6426E, #642B73);
 
-/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 background: linear-gradient(45deg, #C6426E, #642B73)
-}
+} */
 
 .registerButton2{
     padding: 9px 15px;
