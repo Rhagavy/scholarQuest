@@ -8,8 +8,11 @@ urlpatterns = [
     path('', views.homePage, name="home"),
     path('login/', views.loginPage, name="login"),
     path('register/', views.registerPage, name="register"),
-    path('profile/', views.profilePage, name="profile"),
+    path('profile/<str:pk>', views.profilePage, name="profile"),
+    path('profile/edit-profile/<str:pk>',views.editProfile, name="editProfile"),
     path('create-course/', views.courseCreation, name="createCourse"),
+    path('user-dash/',views.userDash, name="userDash"),
+    
 
     #Password reset urls
     # path('password-reset', auth_views.PasswordResetView.as_view(), name="reset_password"),

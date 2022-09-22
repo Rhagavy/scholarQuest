@@ -12,17 +12,15 @@
     </head>
 
     <body class="body">
-        <header class="navbar">
+      {% comment %}
+        <!-- <header class="navbar">
             <img class="logo" src="{% static 'images/SQLogo5.png' %}">
             <nav>
                 <ul class="nav_links">
                     <li><a href="{% url 'home' %}">Home</a></li>
-                    <!-- <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact Us</a></li> -->
                     <li><a href="{% url 'register' %}">Start Tracking</a></li>
-                    <li><a href="{% url 'profile' %}">Profile</a></li>
                     <li><a href="{% url 'createCourse' %}">Create Course</a></li>
-
+                    <li><a href="{% url 'profile' %}">Profile</a></li>
                 </ul>
                
             </nav>
@@ -35,7 +33,9 @@
                   <a href="{% url 'login' %}"><button class="loginButton">Login</button></a>
               </div>
             {% endif %} 
-        </header>
+        </header> -->
+        {% endcomment %}
+        {% include 'navbar.html' %}
         <section class="vh-100 loginForm">
             <div class="container py-5 h-100">
               <div class="row d-flex justify-content-center align-items-center h-100">

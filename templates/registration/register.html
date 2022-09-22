@@ -14,29 +14,7 @@
     </head>
 
     <body class="body">
-        <header class="navbar">
-            <img class="logo" src="{% static 'images/SQLogo5.png' %}">
-            <nav>
-                <ul class="nav_links">
-                    <li><a href="{% url 'home' %}">Home</a></li>
-                    <!-- <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact Us</a></li> -->
-                    <li><a href="{% url 'register' %}">Start Tracking</a></li>
-                    <li><a href="{% url 'profile' %}">Profile</a></li>
-                    <li><a href="{% url 'createCourse' %}">Create Course</a></li>
-                </ul>
-               
-            </nav>
-            {% if request.user.is_authenticated  %}
-                <div class="login">
-                    <a href="{% url 'logout' %}"><button class="loginButton">Logout</button></a>
-                </div>
-            {% else %}
-                <div class="login">
-                    <a href="{% url 'login' %}"><button class="loginButton">Login</button></a>
-                </div>
-            {% endif %} 
-        </header>
+        {% include 'navbar.html' %}
 
         <div class="vh-100 bg-image registerForm">
         <div class="mask d-flex align-items-center h-100 gradient-custom-3">
@@ -110,7 +88,7 @@
                         
                         <div class="form-outline mb-4">
                             <select class="form-select" aria-label="Default select example" name="postSecondaryInstitution">
-                                <option selected>Select you school</option>
+                                <option selected>Select your school</option>
                                 <option value="Algoma University">Algoma University</option>
                                 <option value="2">Algonquin College</option>
                                 <option value="3">Brock University</option>

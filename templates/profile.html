@@ -10,93 +10,46 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     </head>
     <body class="profileBack">
-        <header class="navbar">
-            <img class="logo" src="{% static 'images/SQLogo5.png' %}">
-            <!-- <h1>SQ</h1> -->
-            <nav>
-                <ul class="nav_links">
-                    <li><a href="{% url 'home' %}">Home</a></li>
-                    <!-- <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact Us</a></li> -->
-                    <li><a href="{% url 'register' %}">Start Tracking</a></li>
-                    <li><a href="{% url 'profile' %}">Profile</a></li>
-                    <li><a href="{% url 'createCourse' %}">Create Course</a></li>
-                </ul>
-               
-            </nav>
-            {% if request.user.is_authenticated  %}
-                <div class="login">
-                    <a href="{% url 'logout' %}"><button class="loginButton">Logout</button></a>
-                </div>
-            {% else %}
-                <div class="login">
-                    <a href="{% url 'login' %}"><button class="loginButton">Login</button></a>
-                </div>
-            {% endif %} 
-            </header>
+        {% include 'navbar.html' %}
+
+        
             <div class="container mt-5">
         
                 <div class="row d-flex justify-content-center">
                     
-                    <div class="col-md-7">
+                    <div class="col-md-7 mt-4">
                         
                         <div class="card p-3 py-4">
                             
-                            <h2 class="fw-bold text-uppercase text-center mb-5">Profile</h2>
+                            <h2 class="fw-bold text-uppercase text-center mb-5 mt-5 ">Profile</h2>
                             
-                            <div class="text-center mt-3">
-                                <div class="">
-                                    <label class="" for="form3Example1cg">First Name</label>
-                                    <input type="text" id="form3Example1cg" class="" />
+                            <div class="text-center mt-5">
+                                <div class="profileElement">
+                                    <p class="textLabel">First Name:</p>
+                                    <p class="userInfo">{{user.first_name}}</p>
                                 </div>
-                                <div class="">
-                                    <label class="" for="form3Example1cg">Last Name</label>
-                                    <input type="text" id="form3Example1cg" class="" />
+                                <div class="profileElement">
+                                    <p class="textLabel">Last Name:</p>
+                                    <p class="userInfo">{{user.last_name}}</p>
                                 </div>
-                                <div class="">
-                                    <label class="" for="form3Example1cg">Date of Birth</label>
-                                    <input type="date" id="form3Example1cg" class="" />
+                                <div class="profileElement">
+                                    <p class="textLabel">Date of Birth:</p>
+                                    <p class="userInfo">{{user.dateOfBirth}}</p>
                                 </div>
-                                <div class="">
-                                    <label class="" for="form3Example1cg">Post Secondary Institution</label>
-                                    <input type="text" id="form3Example1cg" class="" />
+                                <div class="profileElement">
+                                    <p class="textLabel">Post Secondary Institution:</p>
+                                    <p class="userInfo">{{user.postSecondaryInstitution}}</p>
                                 </div>
-                                <div class="">
-                                    <label class="" for="form3Example1cg">Email</label>
-                                    <input type="text" id="form3Example1cg" class="" />
-                                </div>
-                                <div class="">
-                                    <label class="" for="form3Example1cg">Password</label>
-                                    <input type="password" id="form3Example1cg" class="" />
-                                </div>
-                                <!-- <span class="bg-secondary p-1 px-4 rounded text-white">Pro</span>
-                                <h5 class="mt-2 mb-0">Alexender Schidmt</h5>
-                                <span>UI/UX Designer</span>
-                                
-                                <div class="px-4 mt-1">
-                                    <p class="fonts">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
-                                
+                                <div class="profileElement">
+                                    <p class="textLabel">Email:</p>
+                                    <p class="userInfo">{{user.email}}</p>
                                 </div>
                                 
-                                <ul class="social-list">
-                                    <li><i class="fa fa-facebook"></i></li>
-                                    <li><i class="fa fa-dribbble"></i></li>
-                                    <li><i class="fa fa-instagram"></i></li>
-                                    <li><i class="fa fa-linkedin"></i></li>
-                                    <li><i class="fa fa-google"></i></li>
-                                </ul>
-                                
-                                <div class="buttons">
-                                    
-                                    <button class="btn btn-outline-primary px-4">Message</button>
-                                    <button class="btn btn-primary px-4 ms-3">Contact</button>
-                                </div> -->
-                                
-                                
+                               
                             </div>
-                            
-                        
-                            
+                            <div class="editPorfile">
+                                <a href="{% url 'editProfile' user.id %}"><button class="registerButton">Edit Profile</button></a>
+                            </div>
                             
                         </div>
                         
@@ -105,5 +58,42 @@
                 </div>
                 
             </div>
+            <!-- <main>
+                <div class="profileBox1">
+
+                </div >
+    
+                <div class="profileBox2">
+                    <div >
+                        <div class="profilebox">
+                            <div class="">
+                                <label class="profileLabel" for="form3Example1cg">First Name</label>
+                                <input type="text" id="form3Example1cg" class="" />
+                            </div>
+                            <div class="">
+                                <label class="profileLabel" for="form3Example1cg">Last Name</label>
+                                <input type="text" id="form3Example1cg" class="" />
+                            </div>
+                            <div class="">
+                                <label class="profileLabel" for="form3Example1cg">Date of Birth</label>
+                                <input type="date" id="form3Example1cg" class="" />
+                            </div>
+                            <div class="">
+                                <label class="profileLabel" for="form3Example1cg">Post Secondary Institution</label>
+                                <input type="text" id="form3Example1cg" class="" />
+                            </div>
+                            <div class="">
+                                <label class="profileLabel" for="form3Example1cg">Email</label>
+                                <input type="text" id="form3Example1cg" class="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="profileBox3">
+    
+                </div>
+            </main> -->
+            
     </body>
 </html>
