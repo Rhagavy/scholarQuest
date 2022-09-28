@@ -1,11 +1,14 @@
+from logging import exception
 from multiprocessing import context
+from pyexpat import model
 import re
 from django.shortcuts import render, redirect
-from .models import User
+from .models import Course, Evaluation, User
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.template.defaulttags import register
 from django import forms
+from django.contrib import messages
 
 
 # Create your views here.
@@ -97,12 +100,148 @@ def editProfile(request,pk):
         print("form valid")
         form.save()
         return redirect('profile', request.user.id)
+    #PSI = array of Post Secondary Institution 
     context = {'PSI' : PSI}
     #do I need a seperate form with only the particular editable fields?
     return render (request, 'edit_profile.html', context)
-    
+
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = ['owner','courseName','courseCode', 'numOfCredits','totalAssignments', 'totalMidTerms','has_FinalExam']
+
+class EvaluationForm(forms.ModelForm):
+    class Meta:
+        model = Evaluation
+        fields = ['course','date','type','subtasks','gradeWeight']
+
 def courseCreation(request):
+    # 'courseName': ['Intro'], 'courseCode': ['COMP1001'], 'numOfCredits': ['4'], 'assignment[1][date]': ['2022-09-13'], 'assignment[1][gradeWeight]': ['20'], 'assignment[1][subTask][]': ['finish page', 'finish title'], 'assignment[2][date]': ['2022-09-05'], 'assignment[2][gradeWeight]': ['4'], 
+    # 'assignment[2][subTask][]': ['finish tomorrow']
+    print(request.POST)
+    print("I was here")
+    if(request.method == "POST"):
+        #check if grade weight is = 100 or less than
+        totalGradeWeight = 0
+        try:
+            totalGradeWeight += int(request.POST["fianlExamGradeWeight"])
+        except:
+            pass
+        try:
+            for j in request.POST.getlist('midterm-counter'):
+                totalGradeWeight += int(request.POST["midterm-"+ i +"-gradeWeight"])
+        except:
+            pass
+        
+        for i in request.POST.getlist('assignment-counter'):
+            totalGradeWeight += int(request.POST["assignment-"+ i +"-gradeWeight"])
+
+        if totalGradeWeight > 100:
+            #flash message to create-course page
+            messages.error(request, 'Total grade weight for all evaluations can not exceed 100!')
+            return render (request, 'create_course.html')
+
+
+
+        courseDict = {'courseName': request.POST['courseName'], 
+            'courseCode':request.POST['courseCode'],
+            'numOfCredits': request.POST['numOfCredits']}
+
+        courseDict["totalAssignments"] = len(request.POST.getlist('assignment-counter'))
+
+        try:
+            courseDict["totalMidTerms"] = len(request.POST.getlist('midterm-counter'))
+        except:
+            courseDict["totalMidTerms"] = 0
+
+        if "has_FinalExam" in request.POST:
+            courseDict["has_FinalExam"] = True
+        else:
+            courseDict["has_FinalExam"] = False
+        courseDict["owner"] = request.user.id
+        form = CourseForm(courseDict)
+        
+        print(courseDict)
+        if form.is_valid():
+            print("course valid")
+            course = form.save()
+            
+        # ---------------------------------
+        assignmentDict= {}
+        assignmentDict['course'] = course.id
+
+        for i in request.POST.getlist('assignment-counter'):
+            assignmentDict['date'] = request.POST["assignment-"+ i +"-date"]
+            assignmentDict['gradeWeight'] = request.POST["assignment-"+ i +"-gradeWeight"]
+            try:
+                assignmentDict['subtasks'] = "\n".join(request.POST.getlist("assignment-"+ i +"-subTask"))
+            except:
+                pass
+            assignmentDict['type'] = "assignment"
+            form = EvaluationForm(assignmentDict)
+            print("assignment Validation")
+            print(assignmentDict)
+            if form.is_valid():
+                print("assignment valid")
+                form.save()
+
+        midtermDict ={}
+        midtermDict['course'] = course.id
+        try:
+            for j in request.POST.getlist('midterm-counter'):
+                midtermDict['date'] = request.POST["midterm-"+ i +"-date"]
+                midtermDict['gradeWeight'] = request.POST["midterm-"+ i +"-gradeWeight"]
+                try:
+                    midtermDict['subtasks'] = "\n".join(request.POST.getlist("midterm-"+ i +"-subTask"))
+                except:
+                    pass
+                midtermDict['type'] = "midterm"
+                form = EvaluationForm(midtermDict)
+                print("midterm Validation")
+                print(midtermDict)
+                if form.is_valid():
+                    print("midterm valid")
+                    form.save()
+        except:
+            print("no midterm")
+
+        finalExamDict = {}
+        finalExamDict['course'] = course.id
+        try:
+            if courseDict["has_FinalExam"]:
+                finalExamDict['date'] = request.POST["finalExamDate"]
+                finalExamDict['gradeWeight'] = request.POST["fianlExamGradeWeight"]
+                try:
+                    finalExamDict['subtasks'] = "\n".join(request.POST.getlist("finalExamMaterial"))
+                except:
+                    pass
+                finalExamDict['type'] = "finalexam"
+                form = EvaluationForm(finalExamDict)
+                print("finalExam Validation")
+                print(finalExamDict)
+                if form.is_valid():
+                    print("finalExam valid")
+                    form.save()
+        except:
+            print("no final exam")
+                
+    #print(request.POST['assignment[1]'])
+    #print(request.POST['assignment'])
+    # there functions to dictionary in python: keys(), values() and items() -> will give keys and values
+    #assignments = [k for k in request.POST.keys() if k.startswith('assignment')]
+    assignments = len(request.POST.getlist('assignment-counter'))
+    midterms = len(request.POST.getlist('midterm-counter'))
+    #for()
+    
+    print(assignments)
+    #midterms = [k for k in request.POST.keys() if k.startswith('midterm')]
+    print(midterms)
+    messages.success(request,"Course added successfully!")
     return render (request, 'create_course.html')
+
+def currentCourse(request):
+    return render (request, 'current_course.html')
+
 
 @register.filter
 def get_value(dictionary, key):
@@ -111,4 +250,14 @@ def get_value(dictionary, key):
 def userDash(request):
     return render (request, 'user_dashboard.html')
 
-PSI = ['Algonquin College', 'Brock University', 'Algoma University'] 
+PSI = ['Algoma University','Algonquin College', 'Brock University', 'Cambrian College','Canadore College',
+'Carleton University','Centennial College','Collège Boréal (FR)','Conestoga College','Confederation College',
+'Durham College','Fanshawe College','Fleming College','George Brown College','Humber College','La Cité collégiale (FR)',
+'Lakehead University','Lambton College','Laurentian University','Loyalist College','McMaster University',
+'Mohawk College','Niagara College','Nipissing University','Northern College','Northern Ontario School of Medicine (NOSM) University',
+'OCAD University','Ontario Tech University','Queen’s University','Royal Military College','Sault College','Seneca College',
+'Sheridan College','St. Clair College','St. Lawrence College','Toronto Metropolitan University','Trent University',
+'University of Guelph','University of Ottawa','University of Toronto','University of Waterloo','University of Windsor',
+'Université de Hearst','Université de l’Ontario français','Western University','Wilfrid Laurier University','York University',
+'Other'
+] 

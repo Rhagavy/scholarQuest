@@ -11,6 +11,7 @@ urlpatterns = [
     path('profile/<str:pk>', views.profilePage, name="profile"),
     path('profile/edit-profile/<str:pk>',views.editProfile, name="editProfile"),
     path('create-course/', views.courseCreation, name="createCourse"),
+    path('current-courses/', views.currentCourse, name="currentCourses"),
     path('user-dash/',views.userDash, name="userDash"),
     
 

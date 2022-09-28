@@ -83,26 +83,8 @@
   <body class="body">
     {% include 'navbar.html' %}
     <div class="container pt-5 pb-5">
-      {% if messages %}
-        <div class="container mt-5">
-          {% for message in messages %}
-          {% if message.tags == "error" %}
-            <div class="alert {{ message.tags }} alert-danger alert-dismissible fade show" role="alert">
-              <strong>{{ message }}</strong>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-          {% else %}
-            <div class="alert {{ message.tags }} alert-success alert-dismissible fade show" role="alert">
-              <strong>{{ message }}</strong>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-          {% endif %}
-          {% endfor %}
-        </div>
-      {% endif %}
-      <h2 class="pb-2" style="color: white"><u>Create Course</u></h2>
-      <form id="course-form" action="{% url 'createCourse' %}" method="POST" >
-        {% csrf_token %}
+      <h2 class="pb-2" style="color: white"><u>Current Courses</u></h2>
+      <form id="course-form">
         <div class="mb-3 row">
           <label for="course-name" class="col-sm-2 col-form-label"
             style="color: white;">Course Name:</label
@@ -247,13 +229,13 @@
         </div>
         <div class="mb-3 m-4 d-flex justify-content-around">
           <!--onclick="expand()"-->
-          <input
-            type="submit"
+          <button
+            type="button"
             class="col-md-2 m-2 btn btn-success"
-            value="Add Course"  
-          />
-            
-          
+            onclick="expand()"
+          >
+            Add Course
+          </button>
           <input
             type="reset"
             class="col-md-2 m-2 btn btn-danger"

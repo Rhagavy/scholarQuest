@@ -4,12 +4,17 @@
     <img class="logo" src="{% static 'images/SQLogo5.png' %}">
     <nav>
         <ul class="nav_links">
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <!-- <li><a href="#">About Us</a></li>
-            <li><a href="#">Contact Us</a></li> -->
-            <li><a href="{% url 'register' %}">Start Tracking</a></li>
-            <li><a href="{% url 'profile' request.user.id %}">Profile</a></li>
+            {% if request.user.is_authenticated  %}
+            <li><a href="#">Dashboard</a></li>
             <li><a href="{% url 'createCourse' %}">Create Course</a></li>
+            <li><a href="#">Important Dates</a></li>
+            <li><a href="#">Forum</a></li>
+            <li><a href="{% url 'profile' request.user.id %}">Profile</a></li>
+            {% else %}
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="{% url 'register' %}">Start Tracking</a></li>
+            {% endif %} 
         </ul>
        
     </nav>

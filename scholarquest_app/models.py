@@ -87,8 +87,8 @@ class Course(models.Model):
     courseCode = models.CharField(max_length=100,blank=False,null=False)
     numOfCredits = models.IntegerField(blank=False,null=False)
     totalAssignments = models.IntegerField(blank=False,null=False)
-    totalMidTerms = models.IntegerField(blank=False,null=False)
-    has_FinalExam = models.BooleanField(default = True, null=False)
+    totalMidTerms = models.IntegerField(blank=False,null=False, default=0)
+    has_FinalExam = models.BooleanField(default = False, null=False)
     def __str__(self):
         return self.courseCode
 
@@ -100,5 +100,5 @@ class Evaluation(models.Model):
     type = models.CharField(max_length = 50,blank=False,null=False,choices=TYPE_CHOICES)
     #before passing subtask to this field, join all the subtask with a seperator (new line character)
     subtasks = models.CharField(max_length = 5000, blank=True,null=True)
-    gradeWeight = models.IntegerField(default=1, validators=[MinValueValidator(1),MaxValueValidator(5)])
+    gradeWeight = models.IntegerField(default=1, validators=[MinValueValidator(1),MaxValueValidator(100)])
 
