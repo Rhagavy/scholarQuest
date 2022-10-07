@@ -13,6 +13,7 @@ urlpatterns = [
     path('create-course/', views.courseCreation, name="createCourse"),
     path('current-courses/', views.currentCourse, name="currentCourses"),
     path('user-dash/',views.userDash, name="userDash"),
+    path('important-dates',views.importantDates ,name="importantDates"),
     
 
     #Password reset urls

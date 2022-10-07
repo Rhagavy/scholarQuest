@@ -250,6 +250,9 @@ def get_value(dictionary, key):
 def userDash(request):
     return render (request, 'user_dashboard.html')
 
+def importantDates(request):
+    return render(request,'important_dates.html')
+
 PSI = ['Algoma University','Algonquin College', 'Brock University', 'Cambrian College','Canadore College',
 'Carleton University','Centennial College','Collège Boréal (FR)','Conestoga College','Confederation College',
 'Durham College','Fanshawe College','Fleming College','George Brown College','Humber College','La Cité collégiale (FR)',
