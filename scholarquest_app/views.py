@@ -9,7 +9,22 @@ from django.contrib.auth.forms import UserCreationForm
 from django.template.defaulttags import register
 from django import forms
 from django.contrib import messages
-
+from datetime import datetime, timedelta
+import calendar
+# from django import template
+  
+# register= template.Library()
+@register.filter(name='split')
+def split(value):
+    """
+        Returns the value turned into a list.
+    """
+    #chr(10) is the unicode for \n
+    # another way: v = list (value.split(chr(10)))
+    v = list (value.split('\n'))
+    print(v)
+    return v
+#Don't need this filt since python by default will split by /n
 
 # Create your views here.
 def homePage(request):
@@ -120,6 +135,7 @@ def courseCreation(request):
     # 'assignment[2][subTask][]': ['finish tomorrow']
     print(request.POST)
     print("I was here")
+    courseCreationSuccessful = False
     if(request.method == "POST"):
         #check if grade weight is = 100 or less than
         totalGradeWeight = 0
@@ -165,6 +181,9 @@ def courseCreation(request):
         if form.is_valid():
             print("course valid")
             course = form.save()
+            courseCreationSuccessful = True
+        else:
+            courseCreationSuccessful = False
             
         # ---------------------------------
         assignmentDict= {}
@@ -183,7 +202,7 @@ def courseCreation(request):
             print(assignmentDict)
             if form.is_valid():
                 print("assignment valid")
-                form.save()
+                form.save() 
 
         midtermDict ={}
         midtermDict['course'] = course.id
@@ -224,24 +243,31 @@ def courseCreation(request):
                     form.save()
         except:
             print("no final exam")
+            
+        if courseCreationSuccessful:
+            messages.success(request,"Course added successfully!")
+        else:
+            messages.error(request, "Course couldn't be added...")
                 
     #print(request.POST['assignment[1]'])
     #print(request.POST['assignment'])
     # there functions to dictionary in python: keys(), values() and items() -> will give keys and values
     #assignments = [k for k in request.POST.keys() if k.startswith('assignment')]
-    assignments = len(request.POST.getlist('assignment-counter'))
-    midterms = len(request.POST.getlist('midterm-counter'))
+    #assignments = len(request.POST.getlist('assignment-counter'))
+    #midterms = len(request.POST.getlist('midterm-counter'))
     #for()
     
-    print(assignments)
+    #print(assignments)
     #midterms = [k for k in request.POST.keys() if k.startswith('midterm')]
-    print(midterms)
-    messages.success(request,"Course added successfully!")
+    #print(midterms)
+    
     return render (request, 'create_course.html')
 
 def currentCourse(request):
     return render (request, 'current_course.html')
 
+def editCourse(request):
+    return render(request, 'edit_course.html')
 
 @register.filter
 def get_value(dictionary, key):
@@ -250,8 +276,72 @@ def get_value(dictionary, key):
 def userDash(request):
     return render (request, 'user_dashboard.html')
 
-def importantDates(request):
-    return render(request,'important_dates.html')
+def importantDates(request,frq='all'):
+    print(frq)
+    courses = Course.objects.filter(owner = request.user.id)
+    #evaluations
+    evs = []
+    dt = datetime.today()
+
+    #find start of the week
+    #dt.weekday() gives position of today's date's current position from Monday 
+    #timedelta converts to date object so that it can be subtracted from today's date to Monday
+    start = dt - timedelta(days=dt.weekday()) 
+
+    #add 6 to get Sunday
+    end = start +  timedelta(days=6) 
+    #format date
+    weeklyStart = start.strftime('%Y-%m-%d')
+    weeklyEnd = end.strftime('%Y-%m-%d')
+
+
+    # 14 days starting from the monday 
+    biWeeklyStart = start
+    biWeeklyEnd = start + timedelta(days=13)
+    #format date
+    biWeeklyStart = biWeeklyStart.strftime('%Y-%m-%d')
+    biWeeklyEnd = biWeeklyEnd.strftime('%Y-%m-%d')
+
+    if frq == "all":
+        for c in courses:
+            evs.append(c.evaluation_set.all())
+
+    elif frq == "weekly":
+        for c in courses:
+            evs.append(c.evaluation_set.filter(date__range = [weeklyStart,weeklyEnd]))
+
+    elif frq == "biweekly":
+        for c in courses:
+            evs.append(c.evaluation_set.filter(date__range = [biWeeklyStart,biWeeklyEnd]))
+
+    elif frq == "monthly":
+        for c in courses:
+            #filter(date__year = dt.year,date__month = dt.month)) django will automatically find start and end date for that month for 
+            #current year
+            evs.append(c.evaluation_set.filter(date__year = dt.year,date__month = dt.month))
+    
+    context = {'courses': courses, 'evs': evs}
+    return render(request,'important_dates.html', context)
+
+def editTasks(request, pk):
+
+    e = Evaluation.objects.get(id=pk)
+    
+    context = {"e" : e}
+    if request.method == "POST":
+        try:
+            list1 = request.POST.getlist("subtasks")
+            list2 = [x for x in list1 if x != ""]
+            subtasks = "\n".join(list2)
+        except:
+            pass
+        #e.update(subtasks=subtasks)
+        e.subtasks = subtasks
+        e.save()
+        print("success")
+        return redirect('importantDates')
+    return render(request, 'edit_tasks.html', context)
+
 
 PSI = ['Algoma University','Algonquin College', 'Brock University', 'Cambrian College','Canadore College',
 'Carleton University','Centennial College','Collège Boréal (FR)','Conestoga College','Confederation College',
@@ -264,3 +354,74 @@ PSI = ['Algoma University','Algonquin College', 'Brock University', 'Cambrian Co
 'Université de Hearst','Université de l’Ontario français','Western University','Wilfrid Laurier University','York University',
 'Other'
 ] 
+
+
+
+
+
+
+
+#dt = datetime.today()
+#used to manually convert to a datetime object from date string to the given format
+#dt = datetime.strptime(day, '%Y-%m-%d')
+
+#find start of the week
+#dt.weekday() gives position of today's date's current position from Monday 
+# timedelta converts to date object so that it can be subtracted from today's date to Monday
+#start = dt - timedelta(days=dt.weekday()) 
+#add 6 to get Sunday
+#end = start +  timedelta(days=6) 
+#format date
+# weeklyStart = start.strftime('%Y-%m-%d')
+# weeklyEnd = end.strftime('%Y-%m-%d')
+
+# weekDateList = []
+# for i in range(0,7):
+#     j = start + timedelta(days=i)
+#     weekDateList.append(j.strftime('%Y-%m-%d'))
+ 
+# print(weekDateList)
+ 
+
+
+# 14 days starting from the monday 
+# biWeeklyStart = start
+# biWeeklyEnd = start + timedelta(days=13)
+# #format date
+# biWeeklyStart = biWeeklyStart.strftime('%Y-%m-%d')
+# biWeeklyEnd = biWeeklyEnd.strftime('%Y-%m-%d')
+
+
+# month = dt.month
+# year = dt.year
+
+# biWeeklyDateList = []
+# for i in range(0,14):
+#     j = dt + timedelta(days=i) 
+#     biWeeklyDateList.append(j.strftime('%Y-%m-%d'))
+ 
+# print(biWeeklyDateList)
+ 
+
+# all the dates in current week + Next week;
+ 
+# biWeeklyDateListOption2 = []
+# for i in range(0,14):
+#     j = start + timedelta(days=i) 
+#     biWeeklyDateListOption2.append(j.strftime('%Y-%m-%d'))
+ 
+# print(biWeeklyDateListOption2)
+
+
+
+# fd,ld = calendar.monthrange(dt.year, dt.month)
+ 
+# startMonth = str(dt.year)+ "-"+str(dt.month)+"-01"
+# startMonth = datetime.strptime(startMonth, '%Y-%m-%d')
+ 
+# monthDateList = []
+# for md in range(ld):
+#     j = startMonth + timedelta(days=md)
+#     monthDateList.append(j.strftime('%Y-%m-%d'))
+ 
+# print(monthDateList)

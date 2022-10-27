@@ -15,36 +15,40 @@
         <div class="container pt-5 pb-5">
         <h2 class="" style="color: white"><u>Important Dates</u></h2>
         <div class="form-check form-check-inline">
-            <a href="{% url 'importantDates' 'weekly' %}">
-              <button>Weekly</button>
-            </a>
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="weekly">
+            <label class="form-check-label" for="flexRadioDefault1" style="color: white">
+              Weekly
+            </label>
         </div>
         <div class="form-check form-check-inline">
-          <a href="{% url 'importantDates' 'biweekly' %}">
-            <button>Bi-Weekly</button>
-          </a>
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked value="bi-weekly">
+            <label class="form-check-label" for="flexRadioDefault2" style="color: white">
+              Bi-Weekly
+            </label>
         </div>
         <div class="form-check form-check-inline">
-          <a href="{% url 'importantDates' 'monthly' %}">
-            <button>Monthly</button>
-          </a>
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked value="monthly">
+            <label class="form-check-label" for="flexRadioDefault2" style="color: white">
+              Monthly
+            </label>
         </div>
         <div class="form-check form-check-inline">
-          <a href="{% url 'importantDates' 'all' %}">
-            <button>All</button>
-          </a>
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked value="all">
+            <label class="form-check-label" for="flexRadioDefault2" style="color: white">
+              All
+            </label>
         </div>
 
         <div class="accordion accordion-flush" id="accordionFlushExample-{{e.id}}">
           <!--loop starts here-->
-            {% for ev in evs %}
-              {% for e in ev %}
+            {% for c in courses %}
+              {% for e in c.evaluation_set.all %}
                 
               
             <div class="accordion-item">
               <h2 class="accordion-header" id="flush-headingOne-{{e.id}}">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne-{{e.id}}" aria-expanded="false" aria-controls="flush-collapseOne-{{e.id}}">
-                {{e.course.courseCode}} - {{e.type|capfirst}}- {{e.date|date:'b d, Y'|capfirst}}
+                {{c.courseCode}} - {{e.type}}- {{e.date}}
               
                 </button>
               </h2>
@@ -53,13 +57,13 @@
                     <strong>Grade Weight: </strong>
                     <strong><br><br>Subtasks:</strong>
                     <ol type="1">
-                      {% with e.subtasks|split as subtasks %}
+                      {% with e.subtasks|split:'\n' as subtasks %}
                       {% for st in subtasks %}
                       <li>{{st}}</li>
                       {% endfor %}
                       {% endwith %}
                     </ol>
-                    <a href="{% url 'editTasks' e.id %}"><button>Edit</button></a>
+                    <a href="#"><button>Edit</button></a>
                 </div>
               </div>
             </div>

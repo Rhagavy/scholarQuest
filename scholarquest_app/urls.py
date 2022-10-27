@@ -12,8 +12,11 @@ urlpatterns = [
     path('profile/edit-profile/<str:pk>',views.editProfile, name="editProfile"),
     path('create-course/', views.courseCreation, name="createCourse"),
     path('current-courses/', views.currentCourse, name="currentCourses"),
+    path('edit-course/', views.editCourse, name="editCourse"),
     path('user-dash/',views.userDash, name="userDash"),
-    path('important-dates',views.importantDates ,name="importantDates"),
+    path('important-dates/',views.importantDates ,name="importantDates"),
+    path('important-dates/<str:frq>',views.importantDates ,name="importantDates"),
+    path('edit-tasks/<str:pk>', views.editTasks, name="editTasks"),
     
 
     #Password reset urls

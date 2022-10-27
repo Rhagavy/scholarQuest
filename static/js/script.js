@@ -120,13 +120,16 @@ function submit() {
 
 function validateCourse() {
   //must have one assignment
-  if (course.assignments.length === 0) {
-    return alert("Must add one assignment.");
-  }
+
+  // if (course.assignments.length === 0) {
+  //   return alert("Must add one assignment.");
+  // }
+
   //must have final exam
   // if (!course.finalExam.present) {
   //   return alert("Must add final exam.");
   // }
+
   //check for empty field
   course.assignments.forEach((assignment) => {
     if (!assignment.dueDate || !assignment.gradeWeight) {
@@ -143,6 +146,7 @@ function validateCourse() {
       return alert("A midterm's required field is empty!");
     }
   });
+  
   //code if final exam is mandatory
 
   // if (
@@ -196,7 +200,7 @@ form.addEventListener("reset", (e) => {
   //   },
   // };
 });
-
+//allows accordin item to open once item is added
 function showAccordion(accordionID) {
   let target = document.querySelector(accordionID);
   new bootstrap.Collapse(target, {
