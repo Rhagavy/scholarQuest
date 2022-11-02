@@ -101,7 +101,7 @@
         </div>
       {% endif %}
       <h2 class="pb-2" style="color: white"><u>Create Course</u></h2>
-      <form id="course-form" action="{% url 'createCourse' %}" method="POST" autocomplete="on">
+      <form id="course-form" action="{% url 'createCourse' %}" method="POST" >
         {% csrf_token %}
         <div class="mb-3 row">
           <label for="course-name" class="col-sm-2 col-form-label"

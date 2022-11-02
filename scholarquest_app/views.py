@@ -1,3 +1,4 @@
+from genericpath import exists
 from logging import exception
 from multiprocessing import context
 from pyexpat import model
@@ -14,28 +15,35 @@ import calendar
 # from django import template
   
 # register= template.Library()
-@register.filter(name='split')
-def split(value):
+#split 
+@register.filter(name='split_subtasks')
+def split_subtasks(value):
     """
         Returns the value turned into a list.
     """
     #chr(10) is the unicode for \n
     # another way: v = list (value.split(chr(10)))
-    v = list (value.split('\n'))
+    if value:
+        
+        v = list (value.split('\n'))
+    else:
+        v = ""
     print(v)
     return v
 #Don't need this filt since python by default will split by /n
 
 # Create your views here.
+#home page
 def homePage(request):
     return render(request,'index.html')
+
 
 
 def loginPage(request):
 
     #if request.user.is_authenticated:
         #return redirect('homePage')
-
+    
     if request.method == 'POST':
         
         print(request.POST)
@@ -47,9 +55,12 @@ def loginPage(request):
         except:
             print( 'Email does not exist')
             #add flash message
-        print("hi")
+        #print("hi")
+        #check to see if user info mat
         user = authenticate(request,username = email, password = password)
         #send user to their dashboard page
+
+        #check if autehications was successful
         if user is not None:
             print(user)
             login(request,user)
@@ -64,7 +75,7 @@ def logoutUser(request):
     return redirect ('login')
 
 
-
+#Registeration Form 
 class RegisterForm(UserCreationForm):
     class Meta:
         model = User
@@ -79,7 +90,8 @@ def registerPage (request):
     if request.method == 'POST':
         print(request.POST)
         form = RegisterForm(request.POST)
-        
+
+        #check to see if regestration info is valid
         if form.is_valid():
             print("form was valid")
             # user = form.save(commit=False)
@@ -87,6 +99,8 @@ def registerPage (request):
             # user.save()
             form.save()
             print("form saved")
+
+    #field Name that will passed to the form and how it will appear
     fieldNames = {'first_name':"First Name",'last_name':"Last Name", 'username':"Forum Display Name",'dateOfBirth':"Date of Birth",'postSecondaryInstitution':"Post Secondary Institution", 'email':"Email Address", 'password1':"Password", 'password2':"Re-type Password"}
     return render(request, 'registration/register.html', {"form":form,"fieldNames":fieldNames})
 
@@ -96,6 +110,7 @@ def profilePage(request,pk):
     context = {'profile':userProfile}
     return render(request, 'profile.html',context)
 
+#Profile Form needed for user to be able to edit profile
 class EditedProfile(forms.ModelForm):
     dateOfBirth = forms.DateField(required=True)
     postSecondaryInstitution = forms.CharField(required=True)
@@ -115,7 +130,7 @@ def editProfile(request,pk):
         print("form valid")
         form.save()
         return redirect('profile', request.user.id)
-    #PSI = array of Post Secondary Institution 
+    #PSI = array of Post Secondary Institution - is at the bottom of page
     context = {'PSI' : PSI}
     #do I need a seperate form with only the particular editable fields?
     return render (request, 'edit_profile.html', context)
@@ -123,12 +138,12 @@ def editProfile(request,pk):
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['owner','courseName','courseCode', 'numOfCredits','totalAssignments', 'totalMidTerms','has_FinalExam']
+        fields = ['owner','courseName','courseCode', 'numOfCredits','totalAssignments', 'totalMidTerms','has_FinalExam','currentGrade','finalGrade','completionProgress']
 
 class EvaluationForm(forms.ModelForm):
     class Meta:
         model = Evaluation
-        fields = ['course','date','type','subtasks','gradeWeight']
+        fields = ['course','date','type','subtasks','gradeWeight','grade']
 
 def courseCreation(request):
     # 'courseName': ['Intro'], 'courseCode': ['COMP1001'], 'numOfCredits': ['4'], 'assignment[1][date]': ['2022-09-13'], 'assignment[1][gradeWeight]': ['20'], 'assignment[1][subTask][]': ['finish page', 'finish title'], 'assignment[2][date]': ['2022-09-05'], 'assignment[2][gradeWeight]': ['4'], 
@@ -136,8 +151,68 @@ def courseCreation(request):
     print(request.POST)
     print("I was here")
     courseCreationSuccessful = False
+    
     if(request.method == "POST"):
-        #check if grade weight is = 100 or less than
+        currentGrade = 0
+        evalutionGrades = []
+        finalGrade = 0
+        completionProgress = 0
+        assignMidtermWithoutGrade = False
+        returnOnErrors = False
+
+        for i in request.POST.getlist('assignment-counter'):
+            try:
+                if (request.POST["assignment-"+ i +"-grade"]) == "":
+                    assignMidtermWithoutGrade = True
+                else:
+                    evalutionGrades.append(request.POST["assignment-"+ i +"-grade"])
+                    completionProgress += int(request.POST["assignment-"+ i +"-gradeWeight"])
+                    finalGrade += (int(request.POST["assignment-"+ i +"-gradeWeight"])/100) * int(request.POST["assignment-"+ i +"-grade"])
+                    print("assignmen")
+            except:
+               pass
+
+        for j in request.POST.getlist('midterm-counter'):
+            try:
+                if (request.POST["midterm-"+ i +"-grade"]) == "":
+                    assignMidtermWithoutGrade = True
+                else:
+                    evalutionGrades.append(request.POST["midterm-"+ i +"-grade"])
+                    completionProgress += int(request.POST["midterm-"+ i +"-gradeWeight"])
+                    finalGrade += (int(request.POST["midterm-"+ i +"-gradeWeight"])/100) * int(request.POST["midterm-"+ i +"-grade"])
+                    print("midterm")
+            except:
+               pass
+
+        try:
+
+            if request.POST["finalExamGrade"] != "":
+                evalutionGrades.append(request.POST["finalExamGrade"])
+                completionProgress += int(request.POST["fianlExamGradeWeight"])
+                finalGrade += (int(request.POST["fianlExamGradeWeight"])/100) * int(request.POST["finalExamGrade"]) 
+                print("final exam")
+                #set current grade as -1, since a grade for final exam means student has completed course
+                currentGrade = -1
+            else:
+                currentGrade = sum(map(int,evalutionGrades))/len(evalutionGrades)
+                finalGrade = -1   
+        except Exception as e:
+            currentGrade = sum(map(int,evalutionGrades))/len(evalutionGrades)
+            finalGrade = -1
+            print(e)
+            
+
+       
+        try:
+
+            if request.POST["finalExamGrade"] != "" and assignMidtermWithoutGrade == True:
+                messages.error(request,"Must enter grades for all assignments and midterms before entering final exam grade!")
+                returnOnErrors = True                
+        except:
+            pass
+
+
+        #check if grade weight is = 100 or less than for applicable evaluation type
         totalGradeWeight = 0
         try:
             totalGradeWeight += int(request.POST["fianlExamGradeWeight"])
@@ -148,22 +223,36 @@ def courseCreation(request):
                 totalGradeWeight += int(request.POST["midterm-"+ i +"-gradeWeight"])
         except:
             pass
+        #why is this not in a try except as well?
+        try:
+            for i in request.POST.getlist('assignment-counter'):
+                totalGradeWeight += int(request.POST["assignment-"+ i +"-gradeWeight"])
+        except:
+            pass
         
-        for i in request.POST.getlist('assignment-counter'):
-            totalGradeWeight += int(request.POST["assignment-"+ i +"-gradeWeight"])
+    
 
-        if totalGradeWeight > 100:
+        #pass error message since total grade weight exceeds 100%
+        if totalGradeWeight != 100:
             #flash message to create-course page
-            messages.error(request, 'Total grade weight for all evaluations can not exceed 100!')
-            return render (request, 'create_course.html')
+            messages.error(request, 'Total grade weight for all evaluations must equal 100 grade weight!')
+            returnOnErrors = True
+        if returnOnErrors:
+            context = {'userData': request.POST}
+            return render (request, 'create_course.html',context)
 
 
-
+        #add course information into dictionary
         courseDict = {'courseName': request.POST['courseName'], 
             'courseCode':request.POST['courseCode'],
-            'numOfCredits': request.POST['numOfCredits']}
-
-        courseDict["totalAssignments"] = len(request.POST.getlist('assignment-counter'))
+            'numOfCredits': request.POST['numOfCredits'],
+            'currentGrade': currentGrade, 'completionProgress' : completionProgress,
+            'finalGrade' : finalGrade}
+        
+        try:
+            courseDict["totalAssignments"] = len(request.POST.getlist('assignment-counter'))
+        except:
+            courseDict["totalAssignments"] = 0
 
         try:
             courseDict["totalMidTerms"] = len(request.POST.getlist('midterm-counter'))
@@ -174,8 +263,14 @@ def courseCreation(request):
             courseDict["has_FinalExam"] = True
         else:
             courseDict["has_FinalExam"] = False
+        #error message if user tries submitting a course with 0 evaluations
+        if courseDict["totalAssignments"] == 0 and courseDict["totalMidTerms"] == 0 and courseDict["has_FinalExam"] == False:
+            messages.error(request,"Course must have an evaluation!")
+            return render (request, 'create_course.html')
+
         courseDict["owner"] = request.user.id
         form = CourseForm(courseDict)
+        
         
         print(courseDict)
         if form.is_valid():
@@ -192,6 +287,9 @@ def courseCreation(request):
         for i in request.POST.getlist('assignment-counter'):
             assignmentDict['date'] = request.POST["assignment-"+ i +"-date"]
             assignmentDict['gradeWeight'] = request.POST["assignment-"+ i +"-gradeWeight"]
+            assignmentDict['grade'] = request.POST["assignment-"+ i +"-grade"]
+            print("Assignment Grade")
+            print(request.POST["assignment-"+ i +"-grade"])
             try:
                 assignmentDict['subtasks'] = "\n".join(request.POST.getlist("assignment-"+ i +"-subTask"))
             except:
@@ -210,6 +308,7 @@ def courseCreation(request):
             for j in request.POST.getlist('midterm-counter'):
                 midtermDict['date'] = request.POST["midterm-"+ i +"-date"]
                 midtermDict['gradeWeight'] = request.POST["midterm-"+ i +"-gradeWeight"]
+                midtermDict['grade'] = request.POST["midterm-"+ i +"-grade"]
                 try:
                     midtermDict['subtasks'] = "\n".join(request.POST.getlist("midterm-"+ i +"-subTask"))
                 except:
@@ -230,6 +329,9 @@ def courseCreation(request):
             if courseDict["has_FinalExam"]:
                 finalExamDict['date'] = request.POST["finalExamDate"]
                 finalExamDict['gradeWeight'] = request.POST["fianlExamGradeWeight"]
+                finalExamDict['grade'] = request.POST["fianlExamGrade"]
+                print("Exam Grade")
+                print(request.POST["fianlExamGrade"])
                 try:
                     finalExamDict['subtasks'] = "\n".join(request.POST.getlist("finalExamMaterial"))
                 except:
@@ -263,18 +365,45 @@ def courseCreation(request):
     
     return render (request, 'create_course.html')
 
-def currentCourse(request):
-    return render (request, 'current_course.html')
+@register.filter
+def get_evaluation_by_type(course,type):
+
+    return course.evaluation_set.filter(type=type)
+
+@register.filter
+def checking_type(course,type):
+    if course.evaluation_set.filter(type=type):
+        print(course.courseCode + ":true")
+        return True
+
+    else:
+        print(course.courseCode + ":false")
+        return False
+
+        
+
+#sk is search key
+def currentCourse(request, sk=""):
+    if sk == "":
+        courses = Course.objects.filter(owner = request.user.id)
+    else:
+        courses = Course.objects.filter(owner = request.user.id).filter(courseCode__contains=sk)
+
+    context = {'courses': courses}
+
+    return render (request, 'current_course.html',context)
 
 def editCourse(request):
-    return render(request, 'edit_course.html')
+    return render(request, 'edit_course_new.html')
 
 @register.filter
 def get_value(dictionary, key):
     return dictionary.get(key)
 
 def userDash(request):
-    return render (request, 'user_dashboard.html')
+    courses = Course.objects.filter(owner = request.user.id)
+    context = {'courses':courses}
+    return render (request, 'user_dashboard.html', context)
 
 def importantDates(request,frq='all'):
     print(frq)
@@ -302,6 +431,7 @@ def importantDates(request,frq='all'):
     biWeeklyStart = biWeeklyStart.strftime('%Y-%m-%d')
     biWeeklyEnd = biWeeklyEnd.strftime('%Y-%m-%d')
 
+    #check which button was clicked and get evaluations accordiongly 
     if frq == "all":
         for c in courses:
             evs.append(c.evaluation_set.all())

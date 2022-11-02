@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course Creation</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+      crossorigin="anonymous"
+    ></script>
+    <script src="{% static 'js/script.js'%}" defer></script>
+    <link
+      href="{% static 'css/stylesheet.css' %}"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <style>
+      ::placeholder {
+        color: white;
+        opacity: 1; /* Firefox */
+      }
+
+      /* input, select, textarea{
+        color: white;
+      }
+
+      textarea:focus, input:focus {
+        color: white;
+      } */
+
+      .task,
+      .midterm {
+        margin-top: var(--bs-accordion-body-padding-y);
+      }
+
+      .accordion-header {
+        position: relative;
+      }
+      .accordion-button {
+        background-color: rgba(220, 220, 220, 0.25) !important;
+      }
+      .accordion-button::before {
+        content: "\A0\A0\A0\A0\A0\A0";
+      }
+      .accordion-button::after {
+        position: absolute;
+        left: 0.5rem;
+      }
+      :is(#assignments-accordion, #midterms-accordion, #final-exam-accordion)
+        > .accordion-item
+        > .accordion-body {
+        padding: 0 1rem;
+      }
+      .align-right {
+        margin-left: auto;
+      }
+      .accordion-button:not(.collapsed) {
+        box-shadow: none;
+      }
+      #total-assignments,
+      #total-midterms,
+      #is-final-exam {
+        font-weight: bolder;
+      }
+      [id*="-subtasks-collapse"],
+      #assignments,
+      #midterms,
+      #final-exam-materials,
+      [id*="-materials"] {
+        counter-reset: counter;
+      }
+      .subtask,
+      .assignment-name,
+      .midterm,
+      .material {
+        counter-increment: counter;
+      }
+      .subtask label::before,
+      .assignment-name::after,
+      .midterm > .accordion-item h2 p::after,
+      .material label::before {
+        content: counter(counter);
+      }
+
+      .accordion-header-btn {
+        position: absolute;
+        top: 0.8em;
+        right: 0.5em;
+        z-index: 5;
+      }
+
+      #subtaskItems li {
+        padding: 1em;
+      }
+
+      #subtaskItems li div {
+        display: flex;
+      }
+
+      #subtaskItems li div .btn {
+        margin-left: 0.4em;
+      }
+    </style>
+  </head>
+  <body class="body">
+    {% include 'navbar.html' %}
+    <div class="container pt-5 pb-5">
+      <h2 class="pb-2" style="color: white"><u>Edit Course</u></h2>
+      <form id="course-form">
+        <div
+          class="accordion accordion-flush border"
+          id="assignments-accordion"
+        >
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading1">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#flush-collapseOne"
+                aria-expanded="false"
+                aria-controls="flush-collapseOne"
+              >
+                <p class="h4">
+                  COMP 10001
+                  <!--<span id="total-assignments">0</span> -->
+                </p>
+              </button>
+            </h2>
+            <div
+              id="flush-collapseOne"
+              class="accordion-collapse collapse"
+              aria-labelledby="flush-headingOne"
+              data-bs-parent="#accordionFlushExample"
+            >
+              <div class="accordion-body">
+                <strong>Course Name: <span></span></strong> <input type="text" required>
+                <strong><br /><br />Total Credits:<span></span></strong> <input type="number" required>
+                <!--here-->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="heading2">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#flush-collapseTwo"
+                      aria-expanded="false"
+                      aria-controls="flush-collapseTwo"
+                    >
+                      <p class="h4">
+                        Assignments <span id="total-assignments">1</span>
+                      </p>
+                    </button>
+                    <button
+                      class="btn btn-primary align-right accordion-header-btn"
+                      onclick="addAssignment(event)"
+                    >
+                      Add
+                    </button>
+                  </h2>
+                  <div
+                    id="flush-collapseTwo"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="flush-headingTwo"
+                    data-bs-parent="#accordionFlushExample"
+                  >
+                    <div class="accordion-body">
+                      <div id="assignments">
+                        <div class="accordion-item" id="task1" data-id="1">
+                          <h2 class="accordion-header" id="heading2">
+                            <button
+                              class="accordion-button collapsed"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#flush-collapseThree"
+                              aria-expanded="false"
+                              aria-controls="flush-collapseThree"
+                            >
+                              <p class="h4">
+                                Assignment
+                                <!--<span id="total-assignments">0</span> -->
+                              </p>
+                              <div
+                                class="btn btn-light align-right"
+                                onclick="deleteAssignment(1)"
+                              >
+                                ❌
+                              </div>
+                            </button>
+                          </h2>
+                          <div
+                            id="flush-collapseThree"
+                            class="accordion-collapse collapse"
+                            aria-labelledby="flush-headingThree"
+                            data-bs-parent="#accordionFlushExample"
+                          >
+                            <div class="accordion-body">
+                              <!--<strong>Course Name: <span></span></strong>-->
+                              <strong
+                                ><br /><br />Grade Weight:<span></span> <input type="number" required> </strong>
+                              <strong
+                                ><br /><br />Due Date:<span></span
+                              > <input type="date" required></strong>
+                              
+                              
+                              <!--here-->
+
+                              <div id="substasks">
+                                <div
+                                  class="accordion-item"
+                                  id="subTask1"
+                                  data-id="1"
+                                >
+                                  <h2 class="accordion-header" id="heading2">
+                                    <button
+                                      class="accordion-button collapsed"
+                                      type="button"
+                                      data-bs-toggle="collapse"
+                                      data-bs-target="#flush-subtaskCollapse1"
+                                      aria-expanded="false"
+                                      aria-controls="flush-subtaskCollapse1"
+                                    >
+                                      <p class="h4">
+                                        Subtasks
+                                        <!--<span id="total-assignments">0</span> -->
+                                      </p>
+                                      <button
+                                        class="btn btn-primary align-right accordion-header-btn"
+                                        onclick="addSubtaskItem(event)"
+                                      >
+                                        Add
+                                      </button>
+                                    </button>
+                                  </h2>
+                                  <div
+                                    id="flush-subtaskCollapse1"
+                                    class="accordion-collapse collapse"
+                                    aria-labelledby="flush-headingThree"
+                                    data-bs-parent="#accordionFlushExample"
+                                  >
+                                    <div class="accordion-body">
+                                      <ol id="subtaskItems">
+                                        <li id="subtaskItem1">
+                                          <div>
+                                            <input
+                                              class="form-control"
+                                              value="new subtask"
+                                              id="subtaskItemInput1"
+                                            />
+
+                                            <div
+                                              class="btn btn-light align-right"
+                                              onclick="deleteSubtaskItem(1)"
+                                            >
+                                              ❌
+                                            </div>
+                                          </div>
+                                        </li>
+                                      </ol>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!--here-->
+                    </div>
+                  </div>
+
+                  <!--MidTerm-->
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading2">
+                      <button
+                        class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mid-header"
+                        aria-expanded="false"
+                        aria-controls="mid-header"
+                      >
+                        <p class="h4">
+                          Midterms
+                          <span id="total-midterms">1</span>
+                        </p>
+                      </button>
+                      <button
+                        class="btn btn-primary align-right accordion-header-btn"
+                        onclick="addMidterm(event)"
+                      >
+                        Add
+                      </button>
+                    </h2>
+                    <div
+                      id="mid-header"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="mid-header"
+                      data-bs-parent="#accordionFlushExample"
+                    >
+                      <div class="accordion-body">
+                        <div id="midterms">
+                          <div
+                            class="accordion-item"
+                            id="mideTerm1"
+                            data-id="1"
+                          >
+                            <h2 class="accordion-header" id="heading2">
+                              <button
+                                class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#mid-1"
+                                aria-expanded="false"
+                                aria-controls="mid-1"
+                              >
+                                <p class="h4">Midterm</p>
+                                <div
+                                  class="btn btn-light align-right"
+                                  onclick="deleteMidterm(1)"
+                                >
+                                  ❌
+                                </div>
+                              </button>
+                            </h2>
+                            <div
+                              id="mid-1"
+                              class="accordion-collapse collapse"
+                              aria-labelledby="mid-1"
+                              data-bs-parent="#accordionFlushExample"
+                            >
+                              <div class="accordion-body">
+                                <strong>Grade Weight:<span></span></strong>
+                                <br /><br />
+                                <strong>Date:<span></span></strong><br /><br />
+                                <strong>Material Covered:</strong>
+                                <!--here-->
+                                <div id="substasks">
+                                  <div
+                                    class="accordion-item"
+                                    id="subTask1"
+                                    data-id="1"
+                                  >
+                                    <h2 class="accordion-header" id="heading2">
+                                      <button
+                                        class="accordion-button collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#flush-subtaskCollapse1"
+                                        aria-expanded="false"
+                                        aria-controls="flush-subtaskCollapse1"
+                                      >
+                                        <p class="h4">
+                                          Material Covered
+                                          <!--<span id="total-assignments">0</span> -->
+                                        </p>
+                                        <button
+                                          class="btn btn-primary align-right accordion-header-btn"
+                                          onclick="addSubtaskItem(event)"
+                                        >
+                                          Add
+                                        </button>
+                                      </button>
+                                    </h2>
+                                    <div
+                                      id="flush-subtaskCollapse1"
+                                      class="accordion-collapse collapse"
+                                      aria-labelledby="flush-headingThree"
+                                      data-bs-parent="#accordionFlushExample"
+                                    >
+                                      <div class="accordion-body">
+                                        <ol id="subtaskItems">
+                                          <li id="subtaskItem1">
+                                            <div>
+                                              <input
+                                                class="form-control"
+                                                value="new subtask"
+                                                id="subtaskItemInput1"
+                                              />
+  
+                                              <div
+                                                class="btn btn-light align-right"
+                                                onclick="deleteSubtaskItem(1)"
+                                              >
+                                                ❌
+                                              </div>
+                                            </div>
+                                          </li>
+                                        </ol>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--here-->
+                      </div>
+                    </div>
+
+                    <!--FinalExam-->
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="heading2">
+                        <button
+                          class="accordion-button collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#exam-header"
+                          aria-expanded="false"
+                          aria-controls="exam-header"
+                        >
+                          <p class="h4">
+                            Final Exam: <span id="finalExamStatusSpan"></span>
+                            <!--<span id="total-assignments">0</span> -->
+                          </p>
+                        </button>
+
+                        <button
+                          class="btn btn-primary align-right accordion-header-btn"
+                          onclick="addFinalExam(event)"
+                          id="addFinalExamBtn"
+                        >
+                          Add
+                        </button>
+                        <button
+                          class="btn btn-primary align-right accordion-header-btn"
+                          onclick="deleteFinalExam(event)"
+                          id="deleteFinalExamBtn"
+                        >
+                          Delete
+                        </button>
+                      </h2>
+                      <div
+                        id="exam-header"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="exam-header"
+                        data-bs-parent="#accordionFlushExample"
+                      >
+                        <div class="accordion-body">
+                          <strong>Grade Weight: <span></span></strong>
+                          <strong><br /><br />Date:<span></span></strong>
+                          <strong
+                            ><br /><br />Grade Weight:<span></span
+                          ></strong>
+                          <strong><br /><br />Material Covered:</strong>
+                          <ol type="1">
+                            <li>Create classes</li>
+                            <li>Create database</li>
+                            <li>Static Pages</li>
+                            <li>Add functionalities</li>
+                          </ol>
+                          <!--here-->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <input
+          type="submit"
+          class="col-md-2 m-2 btn btn-success"
+          value="Save Changes"
+        />
+        <a href="{% url 'currentCourses' %}">
+          <button class="col-md-2 m-2 btn btn-danger">Cancel</button>
+        </a>
+      </form>
+    </div>
+    <script>
+      let newAssignmentID = 1;
+      let newMidtermID = 1;
+      let newSubtaskItemID = 1;
+
+      const assignmentContainer = document.querySelector("#assignments");
+      const totalAssignments = document.querySelector("#total-assignments");
+      const assignmentsCount = countChildren(assignmentContainer);
+
+      const midtermContainer = document.querySelector("#midterms");
+      const midtermsCount = countChildren(midtermContainer);
+      const totalMidterms = document.querySelector("#total-midterms");
+
+      const examHeader = document.querySelector("#exam-header");
+      const examHasChildren = countChildren(examHeader);
+
+      const addFinalExamBtn = document.querySelector("#addFinalExamBtn");
+      const deleteFinalExamBtn = document.querySelector("#deleteFinalExamBtn");
+      const finalExamStatusSpan = document.querySelector(
+        "#finalExamStatusSpan"
+      );
+
+      const subtaskContainer = document.querySelector("#subtaskItems");
+      const subtasksCount = countChildren(subtaskContainer);
+
+      if (examHasChildren) {
+        hideAddExamButton();
+      } else {
+        showAddExamButton();
+      }
+
+      function deleteFinalExam(e) {
+        e.preventDefault();
+        document.querySelector("#exam-header .accordion-body").remove();
+        showAddExamButton();
+        updateFinalExamStatus();
+      }
+
+      function updateFinalExamStatus() {
+        if (countChildren(examHeader)) {
+          finalExamStatusSpan.innerText = "Yes";
+        } else {
+          finalExamStatusSpan.innerText = "No";
+        }
+      }
+
+      updateFinalExamStatus();
+
+      function addFinalExam(e) {
+        e.preventDefault();
+        hideAddExamButton();
+        let finalExamAccordionBody = `
+        <div class="accordion-body">
+                        <strong>Grade Weight: <span></span></strong>
+                        <strong><br><br>Date:<span></span></strong>
+                        <strong><br><br>Grade Weight:<span></span></strong>
+                        <strong><br><br>Material Covered:</strong>
+                        <ol type="1">
+                          <li>Create classes</li>
+                          <li>Create database</li>
+                          <li>Static Pages</li>
+                          <li>Add functionalities</li>
+                        </ol>
+                        <!--here-->
+                      </div>
+              `;
+        examHeader.insertAdjacentHTML("beforeend", finalExamAccordionBody);
+        updateFinalExamStatus();
+      }
+
+      function hideAddExamButton() {
+        addFinalExamBtn.style.display = "none";
+        deleteFinalExamBtn.style.display = "block";
+      }
+      function showAddExamButton() {
+        addFinalExamBtn.style.display = "block";
+        deleteFinalExamBtn.style.display = "none";
+      }
+      function countChildren(node) {
+        return Array.from(node.children).length;
+      }
+
+      function deleteAssignment(id) {
+        let deletionResponse = confirm(
+          "Are you sure you want to delete the chosen assignment"
+        );
+
+        if (deletionResponse) {
+          document.getElementById(`task${id}`).remove();
+          const assignmentsCountAfterDeletion =
+            countChildren(assignmentContainer);
+          let newAssignmentCount = assignmentsCountAfterDeletion;
+          totalAssignments.innerText = newAssignmentCount--;
+        }
+      }
+
+      function addAssignment(e) {
+        e.preventDefault();
+        newAssignmentID += assignmentsCount;
+        let assignment = `
+        <div class="accordion-item task" id="task${newAssignmentID}" data-id="${newAssignmentID}">
+                          <h2 class="accordion-header" id="heading2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${newAssignmentID}" aria-expanded="false" aria-controls="flush-collapseThree">
+                              <p class="h4">
+                                 Assignment <!--<span id="total-assignments">0</span> -->
+                              </p>
+                               <div
+                              class="btn btn-light align-right"
+                              onclick="deleteAssignment(${newAssignmentID})"
+                              data-target='assignment${newAssignmentID}'
+                              "
+                            >
+                              ❌
+                            </div>
+                            </button>
+
+                          </h2>
+                          <div id="flush-collapse${newAssignmentID}" class="accordion-collapse collapse" aria-labelledby="flush-heading${newAssignmentID}" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">
+                                <strong>Course Name: <span></span></strong>
+                                <strong><br><br>Grade Weight:<span></span></strong>
+                                <strong><br><br>Due Date:<span></span></strong>
+                                <strong><br><br>Sub-Tasks:</strong>
+                                <ol type="1">
+                                  <li>Create classes</li>
+                                  <li>Create database</li>
+                                  <li>Static Pages</li>
+                                  <li>Add functionalities</li>
+                                </ol>
+                              <!--here-->
+                            </div>
+                          </div>
+                          <!-- Modal -->
+                          <div class="modal fade" id="assignment${newAssignmentID}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLabel">Confirm deletion !!</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  Are sure you want to delete Assignment ${newAssignmentID} !!?
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                  <button type="button" class="btn btn-primary">Delete</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        `;
+
+        assignmentContainer.insertAdjacentHTML("beforeend", assignment);
+        const updatedAssignmentsCount = countChildren(assignmentContainer);
+
+        totalAssignments.innerText = updatedAssignmentsCount;
+      }
+
+      function addMidterm(e) {
+        e.preventDefault();
+        newMidtermID += midtermsCount;
+        let midterm = ` <div class="accordion-item midterm" id="midterm${newMidtermID}" data-id="${newMidtermID}">
+                            <h2 class="accordion-header" id="heading2">
+                              <button
+                                class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#mid-${newMidtermID}"
+                                aria-expanded="false"
+                                aria-controls="mid-${newMidtermID}"
+                              >
+                                <p class="h4">
+                                  Midterm
+                                </p>
+                                  <div
+                                  class="btn btn-light align-right"
+                                  onclick="deleteMidterm(${newMidtermID})"
+                                >
+                                  ❌
+                                </div>
+                              </button>
+                            </h2>
+                            <div
+                              id="mid-${newMidtermID}"
+                              class="accordion-collapse collapse"
+                              aria-labelledby="mid-${newMidtermID}"
+                              data-bs-parent="#accordionFlushExample"
+                            >
+                              <div class="accordion-body">
+                                <strong>Grade Weight:<span></span></strong>
+                                <strong><br /><br />Date:<span></span></strong>
+                                <strong><br /><br />Material Covered:</strong>
+                                <ol type="1">
+                                  <li>Create classes</li>
+                                  <li>Create database</li>
+                                  <li>Static Pages</li>
+                                  <li>Add functionalities</li>
+                                </ol>
+                                <!--here-->
+                              </div>
+                            </div>
+                          </div>`;
+
+        midtermContainer.insertAdjacentHTML("beforeend", midterm);
+        const updatedMidtermsCount = countChildren(midtermContainer);
+        totalMidterms.innerText = updatedMidtermsCount;
+      }
+
+      function deleteMidterm(id) {
+        let deletionResponse = confirm(
+          "Are you sure you want to delete the chosen Midterm"
+        );
+
+        if (deletionResponse) {
+          document.getElementById(`midterm${id}`).remove();
+          const midtermsCountAfterDeletion = countChildren(midtermContainer);
+          let newMidtermCount = midtermsCountAfterDeletion;
+          totalMidterms.innerText = newMidtermCount--;
+        }
+      }
+
+      function addSubtaskItem(e) {
+        e.preventDefault();
+        newSubtaskItemID += subtasksCount;
+        const subtaskItemContent = `
+           <li id="subtaskItem${newSubtaskItemID}">
+                <div>
+                  <input
+                    class="form-control"
+                    value="new subtask"
+                    id="subtaskItemInput${newSubtaskItemID}"
+                  />
+                  <div
+                    class="btn btn-light align-right"
+                    onclick="deleteSubtaskItem(${newSubtaskItemID})"
+                  >
+                    ❌
+                  </div>
+                </div>
+            </li>`;
+
+        subtaskContainer.insertAdjacentHTML("beforeend", subtaskItemContent);
+      }
+
+      function deleteSubtaskItem(subTaskItemID) {
+
+        document.getElementById(`subtaskItem${subTaskItemID}`).remove();
+
+      }
+    </script>
+  </body>
+  
+</html>

@@ -202,17 +202,3 @@ display: inline-block;
     top: 10px;
     right: 100px;
 }
-
-/** DASHBOARD PAGE **/
-.box1{
-    
-}
-.box2{
-    background-color:#C6426E
-}
-.main{
-    height: 100vh;
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    grid-template-rows: 1fr;
-}

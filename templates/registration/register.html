@@ -24,7 +24,9 @@
                 <div class="card" style="border-radius: 15px;">
                     <div class="card-body p-5">
                     <h2 class="fw-bold text-uppercase text-center mb-5">Create an account</h2>
+                    <!--output form error if there any-->
                     {% if form.errors %}
+                        <!--ouput field errors-->
                         {% for field in form %}
                             {% for error in field.errors %}
                                 <!-- <div class="alert alert-danger">
@@ -38,6 +40,7 @@
                                 
                             {% endfor %}
                         {% endfor %}
+                        <!--ouput other errors-->
                         {% for error in form.non_field_errors %}
                             <!-- <div class="alert alert-danger">
                                 <strong>{{ error|escape }}</strong>

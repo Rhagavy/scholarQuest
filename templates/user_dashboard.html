@@ -18,64 +18,48 @@
       integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
       crossorigin="anonymous"
     ></script>
-
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  <script type="text/javascript">
-    google.charts.load('current', {'packages':['gantt']});
-    google.charts.setOnLoadCallback(drawChart);
-
-    function daysToMilliseconds(days) {
-      return days * 24 * 60 * 60 * 1000;
-    }
-
-    function drawChart() {
-
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Task ID');
-      data.addColumn('string', 'Task Name');
-      data.addColumn('date', 'Start Date');
-      data.addColumn('date', 'End Date');
-      data.addColumn('number', 'Duration');
-      data.addColumn('number', 'Percent Complete');
-      data.addColumn('string', 'Dependencies');
-
-      data.addRows([
-        ['Research', 'Find sources',
-         new Date(2015, 0, 1), new Date(2015, 0, 5), null,  100,  null],
-        ['Write', 'Write paper',
-         null, new Date(2015, 0, 9), daysToMilliseconds(3), 25, 'Research,Outline'],
-        ['Cite', 'Create bibliography',
-         null, new Date(2015, 0, 7), daysToMilliseconds(1), 20, 'Research'],
-        ['Complete', 'Hand in paper',
-         null, new Date(2015, 0, 10), daysToMilliseconds(1), 0, 'Cite,Write'],
-        ['Outline', 'Outline paper',
-         null, new Date(2015, 0, 6), daysToMilliseconds(1), 100, 'Research']
-      ]);
-
-      var options = {
-        height: 275
-      };
-
-      var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
-
-      chart.draw(data, options);
-    }
-  </script>
 </head>
 <body class="body">
   {% include 'navbar.html' %}
-<div class="container">
-  <div class="row">
-    <div class="col-10">
-      <div id="chart_div"></div>
+  <main class="main">
+
+    <div class="box1">
+      <h1 style="color:white">Course Progress</h1>
+      <table class="table table-dark">
+        <thead>
+          <tr>
+            <th scope="col">Course</th>
+            <th scope="col">Course Completion Progress (%)</th>
+            <th scope="col">Current Grade</th>
+            <th scope="col">Final Grade</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in courses %}
+            <tr>
+              <th scope="row">{{c.courseCode}}</th>
+              <td>{{c.completionProgress}}</td>
+              {% if c.currentGrade != -1 %}
+              <td>{{c.currentGrade}}</td>
+              <td>N/A</td>
+              {% elif c.currentGrade == -1 and c.finalGrade == -1 %}
+              <td>N/A</td>
+              <td>N/A</td>
+              {% else %}
+              <td>N/A</td>
+              <td>{{c.finalGrade}}</td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-    <div class="col-md-2" style="background-color: #C6426E;">
-      col-4
-    </div>
-  </div>
-</div>
       
-    
-  
+    <div class="box2">
+      <h2 style="color:white">Upcoming Evaluations</h2>
+    </div>
+
+
+  </main>
 </body>
 </html>

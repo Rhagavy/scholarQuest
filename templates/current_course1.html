@@ -1,0 +1,14 @@
+{% for c in courses %}
+    {% if c|checking_type:"assignment" %}
+    {% comment %} {{c|get_evaluation_by_type:"assignment"}} {% endcomment %}
+        {{c}}<br>
+            {% for a in c|get_evaluation_by_type:"assignment" %}
+                {{a}}<br>
+                {% for st in a.subtasks|split1 %}
+                {{st}}
+                {% endfor %}
+                
+            {% empty %}
+            {% endfor %}
+    {% endif %}
+{% endfor %}

@@ -248,25 +248,6 @@ function addAssignment() {
         aria-labelledby="assignment${newAssignmentID}"
         data-bs-parent="#assignment${newAssignmentID}-accordion"
       >
-      
-        <div class="mb-3 row">
-          <label for="assignment${newAssignmentID}-due-grade" class="col-sm-2 col-form-label"
-            >Grade:</label
-          >
-          <div class="col-sm-5">
-            <input
-              type="number"
-              class="form-control-plaintext border rounded px-1"
-              id="assignment${newAssignmentID}-grade"
-              placeholder="Leave blank if incomplete"
-              min="0"
-              max="100"
-              name="assignment-${newAssignmentID}-grade"
-            />
-          </div>
-        </div>
-
-
         <div class="mb-3 row">
           <label for="assignment${newAssignmentID}-due-date" class="col-sm-2 col-form-label"
             >Due Date:</label
@@ -428,23 +409,6 @@ function addMidterm() {
         >
           <div class="mb-3 row">
             <label
-              for="midterm${newMidtermID}-grade"
-              class="col-sm-2 col-form-label"
-              >Grade:</label
-            >
-            <div class="col-sm-4">
-              <input
-                type="number" max="100" min="0"
-                class="form-control-plaintext border rounded px-1"
-                id="midterm${newMidtermID}-grade"
-                
-                name="midterm-${newMidtermID}-grade"
-              />
-            </div>
-          </div>
-
-          <div class="mb-3 row">
-            <label
               for="midterm${newMidtermID}-date"
               class="col-sm-2 col-form-label"
               >Date:</label
@@ -572,25 +536,6 @@ function addFinalExam() {
     <div class="btn btn-light" onclick='document.querySelector("#final-exam").innerHTML = "";document.querySelector("#final-exam-add-btn").style.display = "inline-block";document.querySelector("#is-final-exam").innerText = "No"'>❌</div>
   </div>
   <div class="p-3 pt-0">
-
-    <div class="mb-3 row">
-      <label for="final-exam-grade" class="col-sm-2 col-form-label"
-        >Grade:</label
-      >
-      <div class="col-sm-4">
-        <input
-          type="number"
-          class="form-control-plaintext border rounded px-1"
-          id="final-exam-grade"
-          min="0"
-          max="100"
-          placeholder="Leave blank if incomplete"
-          name="finalExamGrade"
-        />
-        <input hidden name="has_FinalExam" value="True"/>
-      </div>
-    </div>
-
     <div class="mb-3 row">
       <label for="final-exam-date" class="col-sm-2 col-form-label"
         >Date:</label

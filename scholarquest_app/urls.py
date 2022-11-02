@@ -4,6 +4,7 @@ from .import views
 
 from django.contrib.auth import views as auth_views
 
+#urls for pages
 urlpatterns = [
     path('', views.homePage, name="home"),
     path('login/', views.loginPage, name="login"),

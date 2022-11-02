@@ -50,10 +50,10 @@
               </h2>
               <div id="flush-collapseOne-{{e.id}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne-{{e.id}}" data-bs-parent="#accordionFlushExample-{{e.id}}">
                 <div class="accordion-body">
-                    <strong>Grade Weight: </strong>
+                    <strong>Grade Weight: {{e.gradeWeight}}%</strong>
                     <strong><br><br>Subtasks:</strong>
                     <ol type="1">
-                      {% with e.subtasks|split as subtasks %}
+                      {% with e.subtasks|split_subtasks as subtasks %}
                       {% for st in subtasks %}
                       <li>{{st}}</li>
                       {% endfor %}

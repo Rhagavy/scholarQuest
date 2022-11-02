@@ -101,7 +101,7 @@
         </div>
       {% endif %}
       <h2 class="pb-2" style="color: white"><u>Create Course</u></h2>
-      <form id="course-form" action="{% url 'createCourse' %}" method="POST" autocomplete="on">
+      <form id="course-form" action="{% url 'createCourse' %}" method="POST" >
         {% csrf_token %}
         <div class="mb-3 row">
           <label for="course-name" class="col-sm-2 col-form-label"
@@ -115,6 +115,7 @@
               placeholder="Course Name"
               required
               name="courseName"
+              value="{{userData.courseName}}"
             />
           </div>
         </div>
@@ -131,6 +132,7 @@
               placeholder="Course Code"
               required
               name="courseCode"
+              value="{{userData.courseCode}}"
             />
           </div>
         </div>
@@ -144,6 +146,7 @@
               placeholder="Credits"
               required
               name="numOfCredits"
+              value="{{userData.numOfCredits}}"
             />
           </div>
         </div>
@@ -178,7 +181,133 @@
                 class="accordion-collapse collapse show"
                 aria-labelledby="heading1"
                 data-bs-parent="#assignments-accordion"
-              ></div>
+              >
+                <!--loop-->
+                {% for a in userData.assignment-counter %}
+                  <div
+                    class="accordion accordion-flush"
+                    id="assignment{{a}}-accordion" data-id="{{a}}"
+                  >
+                    <div class="accordion-item">
+                      <h3 class="accordion-header" id="assignment{{a}}">
+                        <button
+                          class="accordion-button bg-transparent text-dark p-2"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#assignment{{a}}-collapse"
+                          aria-expanded="true"
+                          aria-controls="assignment{{a}}-collapse"
+                        >
+                          <p class="h5 assignment-name">Assignment </p>
+                          <div
+                            class="btn btn-light align-right"
+                            onclick="removeAssignment({{a}})"
+                          >
+                            ❌
+                          </div>
+                        </button>
+                      </h3>
+                      <div class="accordion-body">
+                        <input hidden name="assignment-counter" value="{{a}}"/>
+                        <div
+                          class="accordion-collapse collapse show"
+                          id="assignment{{a}}-collapse"
+                          aria-labelledby="assignment{{a}}"
+                          data-bs-parent="#assignment{{a}}-accordion"
+                        >
+                        
+                          <div class="mb-3 row">
+                            <label for="assignment{{a}}-due-grade" class="col-sm-2 col-form-label"
+                              >Grade:</label
+                            >
+                            <div class="col-sm-5">
+                              <input
+                                type="number"
+                                class="form-control-plaintext border rounded px-1"
+                                id="assignment{{a}}-grade"
+                                placeholder="Leave blank if incomplete"
+                                min="0"
+                                max="100"
+                                name="assignment-{{a}}-grade"
+                              />
+                            </div>
+                          </div>
+                  
+                  
+                          <div class="mb-3 row">
+                            <label for="assignment{{a}}-due-date" class="col-sm-2 col-form-label"
+                              >Due Date:</label
+                            >
+                            <div class="col-sm-5">
+                              <input
+                                type="date"
+                                class="form-control-plaintext border rounded px-1"
+                                id="assignment{{a}}-due-date"
+                                placeholder="Due Date"
+                                required
+                                name="assignment-{{a}}-date"
+                              />
+                            </div>
+                          </div>
+                          <div class="mb-3 row">
+                            <label
+                              for="assignment{{a}}-grade-weight"
+                              class="col-sm-2 col-form-label"
+                              >Grade Weight:</label
+                            >
+                            <div class="col-sm-5">
+                              <input
+                                type="number"
+                                class="form-control-plaintext border rounded px-1"
+                                id="assignment{{a}}-grade-weight"
+                                placeholder="Grade Weight"
+                                required
+                                name="assignment-{{a}}-gradeWeight"
+                              />
+                            </div>
+                          </div>
+                          <div
+                            class="accordion accordion-flush"
+                            id="assignment{{a}}-subtasks-accordion"
+                          >
+                            <div class="accordion-item">
+                              <h3
+                                class="accordion-header"
+                                id="assignment{{a}}-subtasks"
+                              >
+                                <button
+                                  class="accordion-button bg-transparent text-dark p-2"
+                                  type="button"
+                                  data-bs-toggle="collapse"
+                                  data-bs-target="#assignment{{a}}-subtasks-collapse"
+                                  aria-expanded="true"
+                                  aria-controls="assignment{{a}}-subtasks-collapse"
+                                >
+                                  <p class="h6">Subtasks</p>
+                                  <div
+                                    class="btn btn-primary align-right"
+                                    onclick="showAccordion('#assignment{{a}}-subtasks-collapse');addSubtask({{a}})"
+                                  >
+                                    Add
+                                  </div>
+                                </button>
+                              </h3>
+                              <div class="accordion-body">
+                                <div
+                                  class="accordion-collapse collapse show"
+                                  id="assignment{{a}}-subtasks-collapse"
+                                  aria-labelledby="assignment{{a}}-subtasks"
+                                  data-bs-parent="#assignment{{a}}-subtasks-accordion"
+                                ></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--loop ends-->
+              </div>
             </div>
           </div>
         </div>
