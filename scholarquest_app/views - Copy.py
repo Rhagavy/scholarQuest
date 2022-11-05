@@ -11,9 +11,8 @@ from django.template.defaulttags import register
 from django import forms
 from django.contrib import messages
 from datetime import datetime, timedelta
+from django.http import JsonResponse
 import calendar
-from rest_framework import serializers
-from rest_framework.renderers import JSONRenderer
 # from django import template
   
 # register= template.Library()
@@ -161,6 +160,8 @@ def courseCreation(request):
         completionProgress = 0
         assignMidtermWithoutGrade = False
         returnOnErrors = False
+        messagesObj = {}
+
 
         for i in request.POST.getlist('assignment-counter'):
             try:
@@ -174,7 +175,7 @@ def courseCreation(request):
             except:
                pass
 
-        for i in request.POST.getlist('midterm-counter'):
+        for j in request.POST.getlist('midterm-counter'):
             try:
                 if (request.POST["midterm-"+ i +"-grade"]) == "":
                     assignMidtermWithoutGrade = True
@@ -237,7 +238,8 @@ def courseCreation(request):
         #pass error message since total grade weight exceeds 100%
         if totalGradeWeight != 100:
             #flash message to create-course page
-            messages.error(request, 'Total grade weight for all evaluations must equal 100 grade weight!-Backend')
+            messages.error(request, 'Total grade weight for all evaluations must equal 100 grade weight!')
+            messagesObj.error = "Total grade weight for all evaluations must equal 100 grade weight!"
             returnOnErrors = True
         if returnOnErrors:
             context = {'userData': request.POST}
@@ -248,7 +250,7 @@ def courseCreation(request):
         courseDict = {'courseName': request.POST['courseName'], 
             'courseCode':request.POST['courseCode'],
             'numOfCredits': request.POST['numOfCredits'],
-            'currentGrade': currentGrade, 'completionProgress' : int(completionProgress),
+            'currentGrade': currentGrade, 'completionProgress' : completionProgress,
             'finalGrade' : finalGrade}
         
         try:
@@ -273,11 +275,10 @@ def courseCreation(request):
         courseDict["owner"] = request.user.id
         form = CourseForm(courseDict)
         
-        print("prining course...before")
+        
         print(courseDict)
         if form.is_valid():
             print("course valid")
-            print(courseDict)
             course = form.save()
             courseCreationSuccessful = True
         else:
@@ -332,9 +333,9 @@ def courseCreation(request):
             if courseDict["has_FinalExam"]:
                 finalExamDict['date'] = request.POST["finalExamDate"]
                 finalExamDict['gradeWeight'] = request.POST["finalExamGradeWeight"]
-                finalExamDict['grade'] = request.POST["finalExamGrade"]
+                finalExamDict['grade'] = request.POST["fianlExamGrade"]
                 print("Exam Grade")
-                print(request.POST["finalExamGrade"])
+                print(request.POST["fianlExamGrade"])
                 try:
                     finalExamDict['subtasks'] = "\n".join(request.POST.getlist("finalExamMaterial"))
                 except:
@@ -365,8 +366,9 @@ def courseCreation(request):
     #print(assignments)
     #midterms = [k for k in request.POST.keys() if k.startswith('midterm')]
     #print(midterms)
-    
-    return render (request, 'create_course.html')
+        return JsonResponse({'message': 'you sent a course name'}, safe=False)
+    else:
+       return render (request, 'create_course.html')
 
 @register.filter
 def get_evaluation_by_type(course,type):
@@ -396,39 +398,8 @@ def currentCourse(request, sk=""):
 
     return render (request, 'current_course.html',context)
 
-
-class EvaluationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Evaluation
-        fields = '__all__'
-
-class CourseSerializer(serializers.ModelSerializer):
-    evaluation = serializers.SerializerMethodField()
-    class Meta:
-        model = Course
-        fields = '__all__'
-
-    def get_evaluation(self, obj):
-        evaluation_query = Evaluation.objects.filter(course=obj.id)
-
-        #print(evaluation_query)
-        serializer = EvaluationSerializer(evaluation_query,many=True)
-        #print(serializer.data)
-        return serializer.data
-
-
-
-def editCourse(request,pk):
-    course = Course.objects.filter(owner = request.user).get(id=pk)
-    
-    courseData = CourseSerializer(course).data
-    courseData = JSONRenderer().render(courseData).decode()
-    print(courseData)
-
-    context = {'course': courseData}
-    return render(request, 'createCourse_edit.html',context)
-
-
+def editCourse(request):
+    return render(request, 'edit_course_new.html')
 
 @register.filter
 def get_value(dictionary, key):
@@ -438,8 +409,6 @@ def userDash(request):
     courses = Course.objects.filter(owner = request.user.id)
     context = {'courses':courses}
     return render (request, 'user_dashboard.html', context)
-
-
 
 def importantDates(request,frq='all'):
     print(frq)

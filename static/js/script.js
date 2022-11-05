@@ -1,180 +1,181 @@
 const form = document.querySelector("#course-form");
 
-let course = {
-  courseName: "",
-  courseCode: "",
-  credits: "",
-  assignments: [],
-  midterms: [],
-  finalExam: {
-    present: false,
-  },
-};
+// let course = {
+//   courseName: "",
+//   courseCode: "",
+//   credits: "",
+//   assignments: [],
+//   midterms: [],
+//   finalExam: {
+//     present: false,
+//   },
+// };
 
-async function expand() {
-  //expand all accordion
-  document
-    .querySelectorAll(".accordion-collapse")
-    .forEach((accordion) =>
-      new bootstrap.Collapse(accordion, { toggle: false }).show()
-    );
-  form.reportValidity() && submit();
-}
 
-function submit() {
-  //get all input fields visible and having value
-  // let inputs = Array.from(document.querySelectorAll("input")).filter(
-  //   (input) => input.value
-  // );
-  // let assignmentIDs = [];
-  // let midtermIDs = [];
-  // let isFinalExam = false;
-  // //save input id and value in object
-  // let inputValues = {};
-  // //get the fields value and save to course object
-  // inputs.forEach((input) => {
-  //   if (input.type === "submit" || input.type === "reset") {
-  //     return;
-  //   }
-  //   //save input id and value in object
-  //   inputValues[input.id] = input.value;
-  //   switch (input.id) {
-  //     case "course-name":
-  //       course.courseName = input.value;
-  //       break;
-  //     case "course-code":
-  //       course.courseCode = input.value;
-  //       break;
-  //     case "credits":
-  //       course.credits = input.value;
-  //       break;
+// async function expand() {
+//   //expand all accordion
+//   document
+//     .querySelectorAll(".accordion-collapse")
+//     .forEach((accordion) =>
+//       new bootstrap.Collapse(accordion, { toggle: false }).show()
+//     );
+//   form.reportValidity() && submit();
+// }
 
-  //     default:
-  //       break;
-  //   }
-  //   //get assignment IDs
-  //   if (input.id.includes("assignment") && input.id.includes("due-date")) {
-  //     assignmentIDs.push(input.id.split("assignment")[1][0]); //save the ID (1,2,3...)
-  //   }
-  //   //get midterm IDs
-  //   if (input.id.includes("midterm") && input.id.includes("date")) {
-  //     midtermIDs.push(input.id.split("midterm")[1][0]); //save the ID (1,2,3...)
-  //   }
-  //   //check if final exam is present
-  //   isFinalExam = input.id.includes("final-exam");
-  // });
+// function submit() {
+//   //get all input fields visible and having value
+//   // let inputs = Array.from(document.querySelectorAll("input")).filter(
+//   //   (input) => input.value
+//   // );
+//   // let assignmentIDs = [];
+//   // let midtermIDs = [];
+//   // let isFinalExam = false;
+//   // //save input id and value in object
+//   // let inputValues = {};
+//   // //get the fields value and save to course object
+//   // inputs.forEach((input) => {
+//   //   if (input.type === "submit" || input.type === "reset") {
+//   //     return;
+//   //   }
+//   //   //save input id and value in object
+//   //   inputValues[input.id] = input.value;
+//   //   switch (input.id) {
+//   //     case "course-name":
+//   //       course.courseName = input.value;
+//   //       break;
+//   //     case "course-code":
+//   //       course.courseCode = input.value;
+//   //       break;
+//   //     case "credits":
+//   //       course.credits = input.value;
+//   //       break;
 
-  // //save assignments
-  // assignmentIDs.forEach((id) => {
-  //   let assignment = {
-  //     dueDate: inputValues[`assignment${id}-due-date`],
-  //     gradeWeight: inputValues[`assignment${id}-grade-weight`],
-  //     subtasks: [],
-  //   };
-  //   //save subtasks
-  //   inputs.forEach(
-  //     (input) =>
-  //       input.id.includes(`assignment${id}-subtask`) &&
-  //       assignment.subtasks.push(input.value)
-  //   );
-  //   //store on course object
-  //   course.assignments.push(assignment);
-  // });
-  // //save midterms
-  // midtermIDs.forEach((id) => {
-  //   let midterm = {
-  //     date: inputValues[`midterm${id}-date`],
-  //     startTime: inputValues[`midterm${id}-start-time`],
-  //     endTime: inputValues[`midterm${id}-end-time`],
-  //     gradeWeight: inputValues[`midterm${id}-grade-weight`],
-  //     materialsCovered: [],
-  //   };
-  //   //save materials
-  //   inputs.forEach(
-  //     (input) =>
-  //       input.id.includes(`midterm${id}-material`) &&
-  //       midterm.materialsCovered.push(input.value)
-  //   );
-  //   //store on course object
-  //   course.midterms.push(midterm);
-  // });
-  // //save final exam
-  // if (isFinalExam) {
-  //   let finalExam = {
-  //     present: true,
-  //     date: inputValues["final-exam-date"],
-  //     startTime: inputValues["final-exam-start-time"],
-  //     endTime: inputValues["final-exam-end-time"],
-  //     gradeWeight: inputValues["final-exam-grade-weight"],
-  //     materialsCovered: [],
-  //   };
-  //   inputs.forEach(
-  //     (input) =>
-  //       input.id.includes("final-exam-material") &&
-  //       finalExam.materialsCovered.push(input.value)
-  //   );
-  //   course.finalExam = finalExam;
-  // }
-  validateCourse();
-}
+//   //     default:
+//   //       break;
+//   //   }
+//   //   //get assignment IDs
+//   //   if (input.id.includes("assignment") && input.id.includes("due-date")) {
+//   //     assignmentIDs.push(input.id.split("assignment")[1][0]); //save the ID (1,2,3...)
+//   //   }
+//   //   //get midterm IDs
+//   //   if (input.id.includes("midterm") && input.id.includes("date")) {
+//   //     midtermIDs.push(input.id.split("midterm")[1][0]); //save the ID (1,2,3...)
+//   //   }
+//   //   //check if final exam is present
+//   //   isFinalExam = input.id.includes("final-exam");
+//   // });
 
-function validateCourse() {
-  //must have one assignment
+//   // //save assignments
+//   // assignmentIDs.forEach((id) => {
+//   //   let assignment = {
+//   //     dueDate: inputValues[`assignment${id}-due-date`],
+//   //     gradeWeight: inputValues[`assignment${id}-grade-weight`],
+//   //     subtasks: [],
+//   //   };
+//   //   //save subtasks
+//   //   inputs.forEach(
+//   //     (input) =>
+//   //       input.id.includes(`assignment${id}-subtask`) &&
+//   //       assignment.subtasks.push(input.value)
+//   //   );
+//   //   //store on course object
+//   //   course.assignments.push(assignment);
+//   // });
+//   // //save midterms
+//   // midtermIDs.forEach((id) => {
+//   //   let midterm = {
+//   //     date: inputValues[`midterm${id}-date`],
+//   //     startTime: inputValues[`midterm${id}-start-time`],
+//   //     endTime: inputValues[`midterm${id}-end-time`],
+//   //     gradeWeight: inputValues[`midterm${id}-grade-weight`],
+//   //     materialsCovered: [],
+//   //   };
+//   //   //save materials
+//   //   inputs.forEach(
+//   //     (input) =>
+//   //       input.id.includes(`midterm${id}-material`) &&
+//   //       midterm.materialsCovered.push(input.value)
+//   //   );
+//   //   //store on course object
+//   //   course.midterms.push(midterm);
+//   // });
+//   // //save final exam
+//   // if (isFinalExam) {
+//   //   let finalExam = {
+//   //     present: true,
+//   //     date: inputValues["final-exam-date"],
+//   //     startTime: inputValues["final-exam-start-time"],
+//   //     endTime: inputValues["final-exam-end-time"],
+//   //     gradeWeight: inputValues["final-exam-grade-weight"],
+//   //     materialsCovered: [],
+//   //   };
+//   //   inputs.forEach(
+//   //     (input) =>
+//   //       input.id.includes("final-exam-material") &&
+//   //       finalExam.materialsCovered.push(input.value)
+//   //   );
+//   //   course.finalExam = finalExam;
+//   // }
+//   validateCourse();
+// }
 
-  // if (course.assignments.length === 0) {
-  //   return alert("Must add one assignment.");
-  // }
+// function validateCourse() {
+//   //must have one assignment
 
-  //must have final exam
-  // if (!course.finalExam.present) {
-  //   return alert("Must add final exam.");
-  // }
+//   // if (course.assignments.length === 0) {
+//   //   return alert("Must add one assignment.");
+//   // }
 
-  //check for empty field
-  course.assignments.forEach((assignment) => {
-    if (!assignment.dueDate || !assignment.gradeWeight) {
-      return alert("An assignment's required field is empty!");
-    }
-  });
-  course.midterms.forEach((midterm) => {
-    if (
-      !midterm.date ||
-      !midterm.startTime ||
-      !midterm.endTime ||
-      !midterm.gradeWeight
-    ) {
-      return alert("A midterm's required field is empty!");
-    }
-  });
+//   //must have final exam
+//   // if (!course.finalExam.present) {
+//   //   return alert("Must add final exam.");
+//   // }
+
+//   //check for empty field
+//   course.assignments.forEach((assignment) => {
+//     if (!assignment.dueDate || !assignment.gradeWeight) {
+//       return alert("An assignment's required field is empty!");
+//     }
+//   });
+//   course.midterms.forEach((midterm) => {
+//     if (
+//       !midterm.date ||
+//       !midterm.startTime ||
+//       !midterm.endTime ||
+//       !midterm.gradeWeight
+//     ) {
+//       return alert("A midterm's required field is empty!");
+//     }
+//   });
   
-  //code if final exam is mandatory
+//   //code if final exam is mandatory
 
-  // if (
-  //   !course.finalExam.date ||
-  //   !course.finalExam.startTime ||
-  //   !course.finalExam.endTime ||
-  //   !course.finalExam.gradeWeight
-  // ) {
-  //   return alert("Final Exam's required field is empty!");
-  // }
+//   // if (
+//   //   !course.finalExam.date ||
+//   //   !course.finalExam.startTime ||
+//   //   !course.finalExam.endTime ||
+//   //   !course.finalExam.gradeWeight
+//   // ) {
+//   //   return alert("Final Exam's required field is empty!");
+//   // }
 
-  //show created course object
-  // console.log(JSON.stringify(course, null, 2));
-  // let tab = window.open("about:blank", "_blank");
-  // tab.document.write(`<pre>${JSON.stringify(course, null, 2)}</pre>`);
-  // tab.document.close();
-  // //reset course object
-  // course = {
-  //   courseName: "",
-  //   courseCode: "",
-  //   credits: "",
-  //   assignments: [],
-  //   midterms: [],
-  //   finalExam: {
-  //     present: false,
-  //   },
-  // };
-}
+//   //show created course object
+//   // console.log(JSON.stringify(course, null, 2));
+//   // let tab = window.open("about:blank", "_blank");
+//   // tab.document.write(`<pre>${JSON.stringify(course, null, 2)}</pre>`);
+//   // tab.document.close();
+//   // //reset course object
+//   // course = {
+//   //   courseName: "",
+//   //   courseCode: "",
+//   //   credits: "",
+//   //   assignments: [],
+//   //   midterms: [],
+//   //   finalExam: {
+//   //     present: false,
+//   //   },
+//   // };
+// }
 
 //remove the fields
 form.addEventListener("reset", (e) => {
@@ -256,7 +257,7 @@ function addAssignment() {
           <div class="col-sm-5">
             <input
               type="number"
-              class="form-control-plaintext border rounded px-1"
+              class="form-control-plaintext border rounded px-1 assignment-grade"
               id="assignment${newAssignmentID}-grade"
               placeholder="Leave blank if incomplete"
               min="0"
@@ -291,10 +292,12 @@ function addAssignment() {
           <div class="col-sm-5">
             <input
               type="number"
-              class="form-control-plaintext border rounded px-1"
+              class="form-control-plaintext border rounded px-1 assignment-grade-weight"
               id="assignment${newAssignmentID}-grade-weight"
               placeholder="Grade Weight"
               required
+              min="1"
+              max="100"
               name="assignment-${newAssignmentID}-gradeWeight"
             />
           </div>
@@ -435,7 +438,7 @@ function addMidterm() {
             <div class="col-sm-4">
               <input
                 type="number" max="100" min="0"
-                class="form-control-plaintext border rounded px-1"
+                class="form-control-plaintext border rounded px-1 midterm-grade"
                 id="midterm${newMidtermID}-grade"
                 
                 name="midterm-${newMidtermID}-grade"
@@ -471,7 +474,7 @@ function addMidterm() {
             <div class="col-sm-4">
               <input
                 type="text"
-                class="form-control-plaintext border rounded px-1"
+                class="form-control-plaintext border rounded px-1 midterm-grade-weight"
                 id="midterm${newMidtermID}-grade-weight"
                 required="required"
                 placeholder="Grade Weight"
@@ -620,7 +623,7 @@ function addFinalExam() {
           id="final-exam-grade-weight"
           required="required"
           placeholder="Grade Weight"
-          name="fianlExamGradeWeight"
+          name="finalExamGradeWeight"
         />
       </div>
     </div>
@@ -697,3 +700,5 @@ function addFinalExamMaterials() {
     .querySelector("#final-exam-materials")
     .insertAdjacentHTML("beforeend", content);
 }
+
+

@@ -13,7 +13,7 @@ let course = {
 
 async function expand() {
   //expand all accordion
-  document
+  documenttotalGradeWeight
     .querySelectorAll(".accordion-collapse")
     .forEach((accordion) =>
       new bootstrap.Collapse(accordion, { toggle: false }).show()
@@ -272,7 +272,7 @@ function addAssignment() {
           <div class="col-sm-5">
             <input
               type="number"
-              class="form-control-plaintext border rounded px-1"
+              class="form-control-plaintext border rounded px-1 assignment-grade-weight"
               id="assignment${newAssignmentID}-grade-weight"
               placeholder="Grade Weight"
               required

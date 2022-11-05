@@ -83,6 +83,11 @@
   <body class="body">
     {% include 'navbar.html' %}
     <div class="container pt-5 pb-5">
+      <div id="alerts">
+
+      </div>
+      <input type="text" id="abc"/>
+    
       {% if messages %}
         <div class="container mt-5">
           {% for message in messages %}
@@ -100,8 +105,8 @@
           {% endfor %}
         </div>
       {% endif %}
-      <h2 class="pb-2" style="color: white"><u>Create Course</u></h2>
-      <form id="course-form" action="{% url 'createCourse' %}" method="POST" >
+      <h2 class="pb-2" style="color: white"><u>Update Course</u></h2>
+      <form id="course-form" action="{% url 'createCourse' %}" method="POST" autocomplete="on">
         {% csrf_token %}
         <div class="mb-3 row">
           <label for="course-name" class="col-sm-2 col-form-label"
@@ -115,7 +120,7 @@
               placeholder="Course Name"
               required
               name="courseName"
-              value="{{userData.courseName}}"
+              value="{{course.courseName}}"
             />
           </div>
         </div>
@@ -132,7 +137,7 @@
               placeholder="Course Code"
               required
               name="courseCode"
-              value="{{userData.courseCode}}"
+              value="{{course.courseCode}}"
             />
           </div>
         </div>
@@ -146,7 +151,7 @@
               placeholder="Credits"
               required
               name="numOfCredits"
-              value="{{userData.numOfCredits}}"
+              value="{{course.numOfCredits}}"
             />
           </div>
         </div>
@@ -181,133 +186,7 @@
                 class="accordion-collapse collapse show"
                 aria-labelledby="heading1"
                 data-bs-parent="#assignments-accordion"
-              >
-                <!--loop-->
-                {% for a in userData.assignment-counter %}
-                  <div
-                    class="accordion accordion-flush"
-                    id="assignment{{a}}-accordion" data-id="{{a}}"
-                  >
-                    <div class="accordion-item">
-                      <h3 class="accordion-header" id="assignment{{a}}">
-                        <button
-                          class="accordion-button bg-transparent text-dark p-2"
-                          type="button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#assignment{{a}}-collapse"
-                          aria-expanded="true"
-                          aria-controls="assignment{{a}}-collapse"
-                        >
-                          <p class="h5 assignment-name">Assignment </p>
-                          <div
-                            class="btn btn-light align-right"
-                            onclick="removeAssignment({{a}})"
-                          >
-                            ❌
-                          </div>
-                        </button>
-                      </h3>
-                      <div class="accordion-body">
-                        <input hidden name="assignment-counter" value="{{a}}"/>
-                        <div
-                          class="accordion-collapse collapse show"
-                          id="assignment{{a}}-collapse"
-                          aria-labelledby="assignment{{a}}"
-                          data-bs-parent="#assignment{{a}}-accordion"
-                        >
-                        
-                          <div class="mb-3 row">
-                            <label for="assignment{{a}}-due-grade" class="col-sm-2 col-form-label"
-                              >Grade:</label
-                            >
-                            <div class="col-sm-5">
-                              <input
-                                type="number"
-                                class="form-control-plaintext border rounded px-1"
-                                id="assignment{{a}}-grade"
-                                placeholder="Leave blank if incomplete"
-                                min="0"
-                                max="100"
-                                name="assignment-{{a}}-grade"
-                              />
-                            </div>
-                          </div>
-                  
-                  
-                          <div class="mb-3 row">
-                            <label for="assignment{{a}}-due-date" class="col-sm-2 col-form-label"
-                              >Due Date:</label
-                            >
-                            <div class="col-sm-5">
-                              <input
-                                type="date"
-                                class="form-control-plaintext border rounded px-1"
-                                id="assignment{{a}}-due-date"
-                                placeholder="Due Date"
-                                required
-                                name="assignment-{{a}}-date"
-                              />
-                            </div>
-                          </div>
-                          <div class="mb-3 row">
-                            <label
-                              for="assignment{{a}}-grade-weight"
-                              class="col-sm-2 col-form-label"
-                              >Grade Weight:</label
-                            >
-                            <div class="col-sm-5">
-                              <input
-                                type="number"
-                                class="form-control-plaintext border rounded px-1"
-                                id="assignment{{a}}-grade-weight"
-                                placeholder="Grade Weight"
-                                required
-                                name="assignment-{{a}}-gradeWeight"
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="accordion accordion-flush"
-                            id="assignment{{a}}-subtasks-accordion"
-                          >
-                            <div class="accordion-item">
-                              <h3
-                                class="accordion-header"
-                                id="assignment{{a}}-subtasks"
-                              >
-                                <button
-                                  class="accordion-button bg-transparent text-dark p-2"
-                                  type="button"
-                                  data-bs-toggle="collapse"
-                                  data-bs-target="#assignment{{a}}-subtasks-collapse"
-                                  aria-expanded="true"
-                                  aria-controls="assignment{{a}}-subtasks-collapse"
-                                >
-                                  <p class="h6">Subtasks</p>
-                                  <div
-                                    class="btn btn-primary align-right"
-                                    onclick="showAccordion('#assignment{{a}}-subtasks-collapse');addSubtask({{a}})"
-                                  >
-                                    Add
-                                  </div>
-                                </button>
-                              </h3>
-                              <div class="accordion-body">
-                                <div
-                                  class="accordion-collapse collapse show"
-                                  id="assignment{{a}}-subtasks-collapse"
-                                  aria-labelledby="assignment{{a}}-subtasks"
-                                  data-bs-parent="#assignment{{a}}-subtasks-accordion"
-                                ></div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!--loop ends-->
-              </div>
+              ></div>
             </div>
           </div>
         </div>
@@ -391,5 +270,117 @@
         </div>
       </form>
     </div>
+    <script >
+        let abc = JSON.stringify({{course|safe}})
+        document.getElementById("abc").value = abc;
+
+      const form1 = document.querySelector("#course-form");
+  
+      const alerts = document.querySelector("#alerts")
+      
+
+      function countChildren (selector){
+        return Array.from(
+          document.querySelector(selector).children
+        ).length;
+      }
+
+      function addAlerts(errors){
+        let errorContent = ``
+        if (errors.length >= 1){
+          errors.forEach((error)=> {
+            errorContent += `
+            <div class="alert alert-danger alert-dismissible fade show" id="errorDiv" role="alert">
+              <strong>${error}</strong>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`
+           
+          })
+      
+          window.scrollTo({top:0,behavior: 'smooth'})
+        } else {
+          errorContent = ''
+        }
+
+        alerts.innerHTML = errorContent
+       
+      }
+    
+      form1.addEventListener("submit", function(e){
+
+        let totalGradeWeight = 0;
+        let assignmentsHaveGrade = true;
+        let midtermsHaveGrade = true;
+        const errors = []
+        const assignmentGradeWeight = document.querySelectorAll(".assignment-grade-weight")
+        const midtermGradeWeight = document.querySelectorAll(".midterm-grade-weight")
+
+        const assignmentGrade = document.querySelectorAll(".assignment-grade")
+        const midtermGrade = document.querySelectorAll(".midterm-grade")
+
+        const finalExamGrade = document.querySelector("#final-exam-grade")
+        const finalExamGradeWeight = document.querySelector("#final-exam-grade-weight")
+
+        const hasAssignments = countChildren("#assignments") !== 0
+        const hasMidterms = countChildren("#midterms") !== 0
+        const hasFinalexam = countChildren("#final-exam") !== 0
+
+  
+
+        if (hasAssignments || hasMidterms || hasFinalexam){
+          if (assignmentGradeWeight.length >= 1) {
+            Array.from(assignmentGradeWeight).forEach((gradeWeight)=>{
+              totalGradeWeight += parseInt(gradeWeight.value)
+            })
+          }
+
+          if (assignmentGrade.length >= 1) {
+            Array.from(assignmentGrade).forEach((grade)=>{
+                assignmentsHaveGrade = grade.value !== '';
+                alert(assignmentsHaveGrade)
+            })
+          }
+
+          if (midtermGrade.length >= 1) {
+            Array.from(midtermGrade).forEach((grade)=>{
+              midtermsHaveGrade = grade.value !== '';
+            })
+          }
+
+          if (midtermGradeWeight.length >= 1) {
+            Array.from(midtermGradeWeight).forEach((gradeWeight)=>{
+              totalGradeWeight += parseInt(gradeWeight.value)
+            })
+          }
+
+          if (finalExamGradeWeight !== null) {
+              totalGradeWeight += parseInt(finalExamGradeWeight.value)
+          }
+
+          if ((finalExamGrade !== null && finalExam !== '') && (hasAssignments || hasMidterms) && (!assignmentsHaveGrade || !midtermsHaveGrade)) {
+            errors.push("Must enter grades for all assignments and midterms before entering final exam grade!");
+          }
+
+          if (totalGradeWeight !== 100) {
+            errors.push("Total grade weight for all evaluations must equal 100 grade weight!");
+          }
+
+      } else {
+        errors.push("Course must have an evaluation!");
+      }
+        addAlerts(errors)
+        console.log(totalGradeWeight, assignmentsHaveGrade, midtermsHaveGrade, errors)
+        
+
+        console.log("creating a course")
+
+        if(errors.length > 0){
+          e.preventDefault();
+        }
+
+
+      })
+
+    </script>
   </body>
 </html>

@@ -17,7 +17,6 @@
       integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
       crossorigin="anonymous"
     ></script>
-    <script src="{% static 'js/script.js'%}" defer></script>
     <link
       href="{% static 'css/stylesheet.css' %}"
       rel="stylesheet"
@@ -143,8 +142,8 @@
               data-bs-parent="#accordionFlushExample"
             >
               <div class="accordion-body">
-                <strong>Course Name: <span></span></strong> <input type="text" required>
-                <strong><br /><br />Total Credits:<span></span></strong> <input type="number" required>
+                <strong>Course Name: <span></span></strong> <input type="text" required name="courseName">
+                <strong><br /><br />Total Credits:<span></span></strong> <input type="number" required name="numOfCredits">
                 <!--here-->
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="heading2">
@@ -212,7 +211,7 @@
                               > <input type="date" required></strong>
                               
                               
-                              <!--here-->
+                              <!--subtask here -->
 
                               <div id="substasks">
                                 <div
@@ -235,7 +234,7 @@
                                       </p>
                                       <button
                                         class="btn btn-primary align-right accordion-header-btn"
-                                        onclick="addSubtaskItem(event)"
+                                        onclick="addSubtaskItem(event,`temp`)"
                                       >
                                         Add
                                       </button>
@@ -248,18 +247,18 @@
                                     data-bs-parent="#accordionFlushExample"
                                   >
                                     <div class="accordion-body">
-                                      <ol id="subtaskItems">
-                                        <li id="subtaskItem1">
+                                      <ol id="subtaskItemstemp">
+                                        <li id="subtaskItemtemp">
                                           <div>
                                             <input
                                               class="form-control"
                                               value="new subtask"
-                                              id="subtaskItemInput1"
+                                              id="subtaskItemInput"
                                             />
 
                                             <div
                                               class="btn btn-light align-right"
-                                              onclick="deleteSubtaskItem(1)"
+                                              onclick="deleteSubtaskItem(event)"
                                             >
                                               ❌
                                             </div>
@@ -270,6 +269,11 @@
                                   </div>
                                 </div>
                               </div>
+                              <!--subtask ends-->
+
+
+
+
                             </div>
                           </div>
                         </div>
@@ -312,7 +316,7 @@
                         <div id="midterms">
                           <div
                             class="accordion-item"
-                            id="mideTerm1"
+                            id="midterm1"
                             data-id="1"
                           >
                             <h2 class="accordion-header" id="heading2">
@@ -344,11 +348,12 @@
                                 <br /><br />
                                 <strong>Date:<span></span></strong><br /><br />
                                 <strong>Material Covered:</strong>
-                                <!--here-->
-                                <div id="substasks">
+
+                                <!--midterm subtasks start here-->
+                                <div id="midtermMaterials">
                                   <div
                                     class="accordion-item"
-                                    id="subTask1"
+                                    id="mid-subTask1"
                                     data-id="1"
                                   >
                                     <h2 class="accordion-header" id="heading2">
@@ -362,11 +367,10 @@
                                       >
                                         <p class="h4">
                                           Material Covered
-                                          <!--<span id="total-assignments">0</span> -->
                                         </p>
                                         <button
                                           class="btn btn-primary align-right accordion-header-btn"
-                                          onclick="addSubtaskItem(event)"
+                                          onclick="addMidtermMaterials(event,`temp`)"
                                         >
                                           Add
                                         </button>
@@ -379,18 +383,18 @@
                                       data-bs-parent="#accordionFlushExample"
                                     >
                                       <div class="accordion-body">
-                                        <ol id="subtaskItems">
+                                        <ol id="midtermMaterialItemstemp">
                                           <li id="subtaskItem1">
                                             <div>
                                               <input
                                                 class="form-control"
                                                 value="new subtask"
-                                                id="subtaskItemInput1"
+                                                id="midtermItemInput1"
                                               />
   
                                               <div
                                                 class="btn btn-light align-right"
-                                                onclick="deleteSubtaskItem(1)"
+                                                onclick="deleteMidtermMaterialItem(event)"
                                               >
                                                 ❌
                                               </div>
@@ -401,6 +405,8 @@
                                     </div>
                                   </div>
                                 </div>
+                                <!--midterm subtask ends-->
+
                               </div>
                             </div>
                           </div>
@@ -454,13 +460,63 @@
                             ><br /><br />Grade Weight:<span></span
                           ></strong>
                           <strong><br /><br />Material Covered:</strong>
-                          <ol type="1">
-                            <li>Create classes</li>
-                            <li>Create database</li>
-                            <li>Static Pages</li>
-                            <li>Add functionalities</li>
-                          </ol>
-                          <!--here-->
+                          <!--FinalExam Material starts-->
+                          <div id="examMaterials">
+                            <div
+                              class="accordion-item"
+                              id="exam-subTask1"
+                              data-id="1"
+                            >
+                              <h2 class="accordion-header" id="heading2">
+                                <button
+                                  class="accordion-button collapsed"
+                                  type="button"
+                                  data-bs-toggle="collapse"
+                                  data-bs-target="#flush-subtaskCollapse1"
+                                  aria-expanded="false"
+                                  aria-controls="flush-subtaskCollapse1"
+                                >
+                                  <p class="h4">
+                                    Material Covered
+                                  </p>
+                                  <button
+                                    class="btn btn-primary align-right accordion-header-btn"
+                                    onclick="addExamMaterials(event)"
+                                  >
+                                    Add
+                                  </button>
+                                </button>
+                              </h2>
+                              <div
+                                id="flush-subtaskCollapse1"
+                                class="accordion-collapse collapse"
+                                aria-labelledby="flush-headingThree"
+                                data-bs-parent="#accordionFlushExample"
+                              >
+                                <div class="accordion-body">
+                                  <ol id="examMaterialItems">
+                                    <li id="subtaskItem1">
+                                      <div>
+                                        <input
+                                          class="form-control"
+                                          value="new subtask"
+                                          id="examItemInput1"
+                                        />
+
+                                        <div
+                                          class="btn btn-light align-right"
+                                          onclick="deleteExamMaterialItem(event)"
+                                        >
+                                          ❌
+                                        </div>
+                                      </div>
+                                    </li>
+                                  </ol>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!--FinalExam Material ends-->
                         </div>
                       </div>
                     </div>
@@ -503,8 +559,7 @@
         "#finalExamStatusSpan"
       );
 
-      const subtaskContainer = document.querySelector("#subtaskItems");
-      const subtasksCount = countChildren(subtaskContainer);
+      
 
       if (examHasChildren) {
         hideAddExamButton();
@@ -603,13 +658,49 @@
                                 <strong>Course Name: <span></span></strong>
                                 <strong><br><br>Grade Weight:<span></span></strong>
                                 <strong><br><br>Due Date:<span></span></strong>
-                                <strong><br><br>Sub-Tasks:</strong>
-                                <ol type="1">
-                                  <li>Create classes</li>
-                                  <li>Create database</li>
-                                  <li>Static Pages</li>
-                                  <li>Add functionalities</li>
-                                </ol>
+                                
+                                
+                                <div id="substasks-${newAssignmentID}">
+                                  <div
+                                    class="accordion-item"
+                                    id="subTask1"
+                                    data-id="1"
+                                  >
+                                    <h2 class="accordion-header" id="heading2">
+                                      <button
+                                        class="accordion-button collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#flush-subtaskCollapse1"
+                                        aria-expanded="false"
+                                        aria-controls="flush-subtaskCollapse1"
+                                      >
+                                        <p class="h4">
+                                          Subtasks
+                                          <!--<span id="total-assignments">0</span> -->
+                                        </p>
+                                        <button
+                                          class="btn btn-primary align-right accordion-header-btn"
+                                          onclick="addSubtaskItem(event,${newAssignmentID})"
+                                        >
+                                          Add
+                                        </button>
+                                      </button>
+                                    </h2>
+                                    <div
+                                      id="flush-subtaskCollapse1"
+                                      class="accordion-collapse collapse"
+                                      aria-labelledby="flush-headingThree"
+                                      data-bs-parent="#accordionFlushExample"
+                                    >
+                                      <div class="accordion-body">
+                                        <ol id="subtaskItems${newAssignmentID}">
+                                        </ol>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
                               <!--here-->
                             </div>
                           </div>
@@ -674,13 +765,62 @@
                               <div class="accordion-body">
                                 <strong>Grade Weight:<span></span></strong>
                                 <strong><br /><br />Date:<span></span></strong>
-                                <strong><br /><br />Material Covered:</strong>
-                                <ol type="1">
-                                  <li>Create classes</li>
-                                  <li>Create database</li>
-                                  <li>Static Pages</li>
-                                  <li>Add functionalities</li>
-                                </ol>
+
+                                <div id="midtermMaterials-${newMidtermID}">
+                                  <div
+                                    class="accordion-item"
+                                    id="mid-subTask1"
+                                    data-id="1"
+                                  >
+                                    <h2 class="accordion-header" id="heading2">
+                                      <button
+                                        class="accordion-button collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#flush-subtaskCollapse1"
+                                        aria-expanded="false"
+                                        aria-controls="flush-subtaskCollapse1"
+                                      >
+                                        <p class="h4">
+                                          Material Covered
+                                        </p>
+                                        <button
+                                          class="btn btn-primary align-right accordion-header-btn"
+                                          onclick="addMidtermMaterials(event,${newMidtermID})"
+                                        >
+                                          Add
+                                        </button>
+                                      </button>
+                                    </h2>
+                                    <div
+                                      id="flush-subtaskCollapse1"
+                                      class="accordion-collapse collapse"
+                                      aria-labelledby="flush-headingThree"
+                                      data-bs-parent="#accordionFlushExample"
+                                    >
+                                      <div class="accordion-body">
+                                        <ol id="midtermMaterialItems${newMidtermID}">
+                                          <li id="subtaskItem1">
+                                            <div>
+                                              <input
+                                                class="form-control"
+                                                value="new subtask"
+                                                id="midtermItemInput1"
+                                              />
+  
+                                              <div
+                                                class="btn btn-light align-right"
+                                                onclick="deleteMidtermMaterialItem(event)"
+                                              >
+                                                ❌
+                                              </div>
+                                            </div>
+                                          </li>
+                                        </ol>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>                                
                                 <!--here-->
                               </div>
                             </div>
@@ -703,21 +843,28 @@
           totalMidterms.innerText = newMidtermCount--;
         }
       }
+      
+      //const subtasksCount = countChildren(subtaskContainer);
+      const getRandomString = () => Math.random().toString(36).slice(2);
 
-      function addSubtaskItem(e) {
+      function addSubtaskItem(e,id) {
         e.preventDefault();
-        newSubtaskItemID += subtasksCount;
+        let subtaskContainer = document.querySelector(`#subtaskItems${id}`);
+        //console.log(id)
+        let randomID = getRandomString();
+        console.log(randomID)
+        //newSubtaskItemID += subtasksCount;
         const subtaskItemContent = `
-           <li id="subtaskItem${newSubtaskItemID}">
+           <li id="${randomID}">
                 <div>
                   <input
                     class="form-control"
                     value="new subtask"
-                    id="subtaskItemInput${newSubtaskItemID}"
+                    id="subtaskItemInput${randomID}"
                   />
                   <div
                     class="btn btn-light align-right"
-                    onclick="deleteSubtaskItem(${newSubtaskItemID})"
+                    onclick="deleteSubtaskItem(event)"
                   >
                     ❌
                   </div>
@@ -727,11 +874,84 @@
         subtaskContainer.insertAdjacentHTML("beforeend", subtaskItemContent);
       }
 
-      function deleteSubtaskItem(subTaskItemID) {
-
-        document.getElementById(`subtaskItem${subTaskItemID}`).remove();
+        function deleteSubtaskItem(e) {
+        /*console.log("delete")
+        console.log(randomID)
+        let item =  await document.getElementById(randomID);
+        console.log(item)
+        item.remove()*/
+        const parent = e.target.parentElement.parentElement;
+        parent.remove();
 
       }
+      //const midtermMaterialContainer = document.querySelector('#midtermMaterialItems');
+      
+      
+      function addMidtermMaterials(e,id){
+        let midtermMaterialContainer = document.querySelector(`#midtermMaterialItems${id}`);
+        console.log("clicked")
+        console.log(midtermMaterialContainer)
+        e.preventDefault();
+        let randomID = getRandomString();
+
+
+        const materialItemContent = `
+        <li id="midtermMaterialItem${randomID}">
+             <div>
+               <input
+                 class="form-control"
+                 value="new midterm material"
+                 id="midtermMaterialItemInput${randomID}"
+               />
+               <div
+                 class="btn btn-light align-right"
+                 onclick="deleteMidtermMaterialItem(event)"
+               >
+                 ❌
+               </div>
+             </div>
+         </li>`;
+
+         midtermMaterialContainer.insertAdjacentHTML("beforeend", materialItemContent);
+      }
+
+      function deleteMidtermMaterialItem(e) {
+        const parent = e.target.parentElement.parentElement;
+        parent.remove();
+      }
+
+      let examMaterialContainer = document.querySelector('#examMaterialItems');
+      function addExamMaterials(e){
+        e.preventDefault();
+        let randomID = getRandomString();
+        const examMaterialItemContent = `
+        <li id="examMaterialItem${randomID}">
+             <div>
+               <input
+                 class="form-control"
+                 value="new midterm material"
+                 id="examMaterialItemInput${randomID}"
+               />
+               <div
+                 class="btn btn-light align-right"
+                 onclick="deleteExamMaterialItem(event)"
+               >
+                 ❌
+               </div>
+             </div>
+         </li>`;
+         examMaterialContainer.insertAdjacentHTML("beforeend", examMaterialItemContent);
+      }
+
+      function deleteExamMaterialItem(e){
+        const parent = e.target.parentElement.parentElement;
+        parent.remove();
+      }
+
+      
+
+
+
     </script>
   </body>
   

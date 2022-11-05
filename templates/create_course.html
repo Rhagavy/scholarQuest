@@ -83,6 +83,10 @@
   <body class="body">
     {% include 'navbar.html' %}
     <div class="container pt-5 pb-5">
+      <div id="alerts">
+
+      </div>
+    
       {% if messages %}
         <div class="container mt-5">
           {% for message in messages %}
@@ -262,5 +266,115 @@
         </div>
       </form>
     </div>
+    <script >
+
+      const form1 = document.querySelector("#course-form");
+  
+      const alerts = document.querySelector("#alerts")
+      
+
+      function countChildren (selector){
+        return Array.from(
+          document.querySelector(selector).children
+        ).length;
+      }
+
+      function addAlerts(errors){
+        let errorContent = ``
+        if (errors.length >= 1){
+          errors.forEach((error)=> {
+            errorContent += `
+            <div class="alert alert-danger alert-dismissible fade show" id="errorDiv" role="alert">
+              <strong>${error}</strong>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`
+           
+          })
+      
+          window.scrollTo({top:0,behavior: 'smooth'})
+        } else {
+          errorContent = ''
+        }
+
+        alerts.innerHTML = errorContent
+       
+      }
+    
+      form1.addEventListener("submit", function(e){
+
+        let totalGradeWeight = 0;
+        let assignmentsHaveGrade = true;
+        let midtermsHaveGrade = true;
+        const errors = []
+        const assignmentGradeWeight = document.querySelectorAll(".assignment-grade-weight")
+        const midtermGradeWeight = document.querySelectorAll(".midterm-grade-weight")
+
+        const assignmentGrade = document.querySelectorAll(".assignment-grade")
+        const midtermGrade = document.querySelectorAll(".midterm-grade")
+
+        const finalExamGrade = document.querySelector("#final-exam-grade")
+        const finalExamGradeWeight = document.querySelector("#final-exam-grade-weight")
+
+        const hasAssignments = countChildren("#assignments") !== 0
+        const hasMidterms = countChildren("#midterms") !== 0
+        const hasFinalexam = countChildren("#final-exam") !== 0
+
+  
+
+        if (hasAssignments || hasMidterms || hasFinalexam){
+          if (assignmentGradeWeight.length >= 1) {
+            Array.from(assignmentGradeWeight).forEach((gradeWeight)=>{
+              totalGradeWeight += parseInt(gradeWeight.value)
+            })
+          }
+
+          if (assignmentGrade.length >= 1) {
+            Array.from(assignmentGrade).forEach((grade)=>{
+                assignmentsHaveGrade = grade.value !== '';
+                alert(assignmentsHaveGrade)
+            })
+          }
+
+          if (midtermGrade.length >= 1) {
+            Array.from(midtermGrade).forEach((grade)=>{
+              midtermsHaveGrade = grade.value !== '';
+            })
+          }
+
+          if (midtermGradeWeight.length >= 1) {
+            Array.from(midtermGradeWeight).forEach((gradeWeight)=>{
+              totalGradeWeight += parseInt(gradeWeight.value)
+            })
+          }
+
+          if (finalExamGradeWeight !== null) {
+              totalGradeWeight += parseInt(finalExamGradeWeight.value)
+          }
+
+          if ((finalExamGrade !== null && finalExam !== '') && (hasAssignments || hasMidterms) && (!assignmentsHaveGrade || !midtermsHaveGrade)) {
+            errors.push("Must enter grades for all assignments and midterms before entering final exam grade!");
+          }
+
+          if (totalGradeWeight !== 100) {
+            errors.push("Total grade weight for all evaluations must equal 100 grade weight!");
+          }
+
+      } else {
+        errors.push("Course must have an evaluation!");
+      }
+        addAlerts(errors)
+        console.log(totalGradeWeight, assignmentsHaveGrade, midtermsHaveGrade, errors)
+        
+
+        console.log("creating a course")
+
+        if(errors.length > 0){
+          e.preventDefault();
+        }
+
+
+      })
+
+    </script>
   </body>
 </html>

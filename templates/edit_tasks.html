@@ -14,7 +14,12 @@
     <body class="body">
         {% include 'navbar.html' %}
         <div>
-        <h2>{{e.course}}:{{e.type}}</h2>
+        <h2>{{e.course}}:{{e.type|title}}</h2>
+        {% if e.type == 'assignment' %}
+            <h3>Edit Subtasks</h3>
+        {% else %}
+            <h3>Edit Materials Covered</h3>
+        {% endif %}
         </div>
         <form method="POST" action="{% url 'editTasks' e.id %}">
             {% csrf_token %}

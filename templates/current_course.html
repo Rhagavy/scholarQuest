@@ -86,7 +86,7 @@
       <h2 class="pb-2" style="color: white"><u>Current Courses</u></h2>
       <form id="course-form">
         {% for c in courses %}
-        <div class="accordion accordion-flush border" id="assignments-accordion">
+        <div class="accordion accordion-flush" id="assignments-accordion">
           <div class="accordion-item">
             <h2 class="accordion-header" id="heading1">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne-{{c.id}}" aria-expanded="false" aria-controls="flush-collapseOne">
@@ -98,7 +98,7 @@
                     Delete
                   </div>
                 </a>
-                <a href="{% url 'editCourse' %}">
+                <a href="{% url 'editCourse' c.id %}">
                   <div class="btn btn-primary button101">
                     Edit
                   </div>
@@ -108,148 +108,148 @@
             </h2>
             <div id="flush-collapseOne-{{c.id}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
               <div class="accordion-body">
-                  <strong>Course Name: <span>{{c.courseName}}</span></strong>
-                  <strong><br><br>Total Credits:<span>{{c.numOfCredits}}</span></strong>
-                  <strong><br><br>Completion Progress:<span>{{c.completionProgress}}%</span></strong>
-                  {% if c.currentGrade != -1 %}
-                  <br>
-                  <strong>Current Grade: <span>{{c.currentGrade}}%</span></strong>
-                  {% else %}
-                  <br>
-                  <strong>Current Grade: <span>N/A</span></strong>
-                  {% endif %}
+                <strong>Course Name: <span>{{c.courseName}}</span></strong>
+                <strong><br><br>Total Credits:<span>{{c.numOfCredits}}</span></strong>
+                <strong><br><br>Completion Progress:<span>{{c.completionProgress}}%</span></strong>
+                {% if c.currentGrade != -1 %}
+                <br>
+                <strong>Current Grade: <span>{{c.currentGrade}}%</span></strong>
+                {% else %}
+                <br>
+                <strong>Current Grade: <span>N/A</span></strong>
+                {% endif %}
 
-                  {% if c.finalGrade != -1 %}
-                  <br>
-                  <strong>Final Grade: <span>{{c.finalGrade}}%</span></strong>
-                  {% else %}
-                  <br>
-                  <strong>Final Grade: <span>N/A</span></strong>
-                  {% endif %}
+                {% if c.finalGrade != -1 %}
+                <br>
+                <strong>Final Grade: <span>{{c.finalGrade}}%</span></strong>
+                {% else %}
+                <br>
+                <strong>Final Grade: <span>N/A</span></strong>
+                {% endif %}
                 <!--here-->
-                  <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading2">
-                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo-{{c.id}}" aria-expanded="false" aria-controls="flush-collapseTwo">
-                        <p class="h4">
-                           Assignments <!--<span id="total-assignments">0</span> -->
-                        </p>
-                      </button>
-                      
-                    </h2>
-                    <!--indivual assignments start here-->
-                    {% for a in c|get_evaluation_by_type:"assignment" %}
-                    <div id="flush-collapseTwo-{{c.id}}" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
-                      <div class="accordion-body">
-                        <div class="accordion-item">
-                          <h2 class="accordion-header" id="heading2">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree-{{a.id}}" aria-expanded="false" aria-controls="flush-collapseThree">
-                              <p class="h4">
-                                 Assignment <!--<span id="total-assignments">0</span> -->
-                              </p>
-                            </button>
-                            
-                          </h2>
-                          <div id="flush-collapseThree-{{a.id}}" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
-                            <div class="accordion-body">
-                              <strong><br><br>Status:<span>{{a.status}}</span></strong>
-                                <strong><br><br>Grade Weight:<span>{{a.gradeWeight}}</span></strong>
-                                <strong><br><br>Grade:<span>{{a.grade}}</span></strong>
-                                <strong><br><br>Due Date:<span>{{a.date}}</span></strong>
-                                <strong><br><br>Sub-Tasks:</strong>
-                                <ol type="1">
-                                  
-                                    {% with a.subtasks|split_subtasks as subtasks %}
-                                    {% for st in subtasks %}
-                                    <li>{{st}}</li>
-                                    {% endfor %}
-                                    {% endwith %}
-                                  
-                                </ol>
-                              <!--here-->  
-                            </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="heading2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo-{{c.id}}" aria-expanded="false" aria-controls="flush-collapseTwo">
+                      <p class="h4">
+                          Assignments <!--<span id="total-assignments">0</span> -->
+                      </p>
+                    </button>
+                    
+                  </h2>
+                  <!--indivual assignments start here-->
+                  {% for a in c|get_evaluation_by_type:"assignment" %}
+                  <div id="flush-collapseTwo-{{c.id}}" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                      <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading2">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree-{{a.id}}" aria-expanded="false" aria-controls="flush-collapseThree">
+                            <p class="h4">
+                                Assignment <!--<span id="total-assignments">0</span> -->
+                            </p>
+                          </button>
+                          
+                        </h2>
+                        <div id="flush-collapseThree-{{a.id}}" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+                          <div class="accordion-body">
+                            <strong><br><br>Status:<span>{{a.status}}</span></strong>
+                              <strong><br><br>Grade Weight:<span>{{a.gradeWeight}}</span></strong>
+                              <strong><br><br>Grade:<span>{{a.grade}}</span></strong>
+                              <strong><br><br>Due Date:<span>{{a.date}}</span></strong>
+                              <strong><br><br>Sub-Tasks:</strong>
+                              <ol type="1">
+                                
+                                  {% with a.subtasks|split_subtasks as subtasks %}
+                                  {% for st in subtasks %}
+                                  <li>{{st}}</li>
+                                  {% endfor %}
+                                  {% endwith %}
+                                
+                              </ol>
+                            <!--here-->  
                           </div>
                         </div>
-                        <!--here-->  
                       </div>
+                      <!--here-->  
                     </div>
-                    {% endfor %}
                   </div>
+                  {% endfor %}
+                </div>
 
-                  <!--MidTerm-->
-                  <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading2">
-                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mid-header-{{c.id}}" aria-expanded="false" aria-controls="mid-header">
-                        <p class="h4">
-                           Midterms <!--<span id="total-assignments">0</span> -->
-                        </p>
-                      </button>
-                      
-                    </h2>
-                    <!--indivual assignments start here-->
-                    {% for midterm in c|get_evaluation_by_type:"midterm" %}
-                    <div id="mid-header-{{c.id}}" class="accordion-collapse collapse" aria-labelledby="mid-header" data-bs-parent="#accordionFlushExample">
-                      
-                      <div class="accordion-body">
-                        <div class="accordion-item">
-                          <h2 class="accordion-header" id="heading2">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mid-1-{{midterm.id}}" aria-expanded="false" aria-controls="mid-1">
-                              <p class="h4">
-                                 Midterm <!--<span id="total-assignments">0</span> -->
-                              </p>
-                            </button>
-                            
-                          </h2>
-                          <div id="mid-1-{{midterm.id}}" class="accordion-collapse collapse" aria-labelledby="mid-1" data-bs-parent="#accordionFlushExample">
-                            <div class="accordion-body">
-                                <strong><br><br>Status:<span></span></strong>
-                                <strong><br><br>Grade Weight:<span>{{midterm.gradeWeight}}</span></strong>
-                                <strong><br><br>Date:<span>{{midterm.date}}</span></strong>
-                                <strong><br><br>Material Covered:</strong>
-                                <ol>
-                                {% with midterm.subtasks|split_subtasks as subtasks %}
-                                {% for st in subtasks %}
-                                <li>{{st}}</li>
-                                {% endfor %}
-                                {% endwith %}
-                                </ol>
-                              <!--here-->  
-                            </div>
+                <!--MidTerm-->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="heading2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mid-header-{{c.id}}" aria-expanded="false" aria-controls="mid-header">
+                      <p class="h4">
+                          Midterms <!--<span id="total-assignments">0</span> -->
+                      </p>
+                    </button>
+                    
+                  </h2>
+                  <!--indivual assignments start here-->
+                  {% for midterm in c|get_evaluation_by_type:"midterm" %}
+                  <div id="mid-header-{{c.id}}" class="accordion-collapse collapse" aria-labelledby="mid-header" data-bs-parent="#accordionFlushExample">
+                    
+                    <div class="accordion-body">
+                      <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading2">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mid-1-{{midterm.id}}" aria-expanded="false" aria-controls="mid-1">
+                            <p class="h4">
+                                Midterm <!--<span id="total-assignments">0</span> -->
+                            </p>
+                          </button>
+                          
+                        </h2>
+                        <div id="mid-1-{{midterm.id}}" class="accordion-collapse collapse" aria-labelledby="mid-1" data-bs-parent="#accordionFlushExample">
+                          <div class="accordion-body">
+                              <strong><br><br>Status:<span></span></strong>
+                              <strong><br><br>Grade Weight:<span>{{midterm.gradeWeight}}</span></strong>
+                              <strong><br><br>Date:<span>{{midterm.date}}</span></strong>
+                              <strong><br><br>Material Covered:</strong>
+                              <ol>
+                              {% with midterm.subtasks|split_subtasks as subtasks %}
+                              {% for st in subtasks %}
+                              <li>{{st}}</li>
+                              {% endfor %}
+                              {% endwith %}
+                              </ol>
+                            <!--here-->  
                           </div>
                         </div>
-                        <!--here-->  
                       </div>
-                  </div>
-                  {% endfor %}
+                      <!--here-->  
+                    </div>
+                </div>
+                {% endfor %}
 
-                  <!--FinalExam-->
-                  <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading2">
-                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#exam-header-{{c.id}}" aria-expanded="false" aria-controls="exam-header">
-                        <p class="h4">
-                           Final Exam <!--<span id="total-assignments">0</span> -->
-                        </p>
-                      </button>
-                      
-                    </h2>
-                    {% for finalExam in c|get_evaluation_by_type:"finalexam" %}
-                    <div id="exam-header-{{c.id}}" class="accordion-collapse collapse" aria-labelledby="exam-header" data-bs-parent="#accordionFlushExample">
-                      
-                      <div class="accordion-body">
-                        <strong><br><br>status:<span></span></strong>
-                        <strong><br><br>Grade Weight:<span>{{finalExam.gradeWeight}}</span></strong>
-                        <strong><br><br>Date:<span>{{finalExam.date}}</span></strong>
-                        <strong><br><br>Material Covered:</strong>
-                        <ol type="1">
-                          {% with finalExam.subtasks|split_subtasks as subtasks %}
-                            {% for st in subtasks %}
-                            <li>{{st}}</li>
-                            {% endfor %}
-                          {% endwith %}
-                        </ol>
-                        <!--here-->  
-                      </div>
+                <!--FinalExam-->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="heading2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#exam-header-{{c.id}}" aria-expanded="false" aria-controls="exam-header">
+                      <p class="h4">
+                          Final Exam <!--<span id="total-assignments">0</span> -->
+                      </p>
+                    </button>
+                    
+                  </h2>
+                  {% for finalExam in c|get_evaluation_by_type:"finalexam" %}
+                  <div id="exam-header-{{c.id}}" class="accordion-collapse collapse" aria-labelledby="exam-header" data-bs-parent="#accordionFlushExample">
+                    
+                    <div class="accordion-body">
+                      <strong><br><br>status:<span></span></strong>
+                      <strong><br><br>Grade Weight:<span>{{finalExam.gradeWeight}}</span></strong>
+                      <strong><br><br>Date:<span>{{finalExam.date}}</span></strong>
+                      <strong><br><br>Material Covered:</strong>
+                      <ol type="1">
+                        {% with finalExam.subtasks|split_subtasks as subtasks %}
+                          {% for st in subtasks %}
+                          <li>{{st}}</li>
+                          {% endfor %}
+                        {% endwith %}
+                      </ol>
+                      <!--here-->  
+                    </div>
                   </div>
-                  {% endfor %}
+                {% endfor %}
               </div>
             </div>
           </div>

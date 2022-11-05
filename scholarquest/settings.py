@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'scholarquest_app.apps.ScholarquestAppConfig',
     'ckeditor',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -160,3 +161,9 @@ EMAIL_HOST_PASSWORD = 'tcjjetjntwboqscl'
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "login"
 
+# Django rest framework
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.SessionAuthentication'
+#     ]
+# }

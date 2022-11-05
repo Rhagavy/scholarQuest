@@ -83,7 +83,7 @@ class ReportedContent(models.Model):
 
 class Course(models.Model):
     id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
-    finalGrade = models.IntegerField(blank=True,null=True, validators=[MinValueValidator(-1),MaxValueValidator(100)], default = -1)
+    finalGrade = models.DecimalField(decimal_places=1,max_digits=4,blank=True,null=True, validators=[MinValueValidator(-1),MaxValueValidator(100)], default = -1)
     owner = models.ForeignKey(User,on_delete=models.CASCADE)
     courseName = models.CharField(max_length=100,blank=False,null=False)
     courseCode = models.CharField(max_length=100,blank=False,null=False)
@@ -92,7 +92,7 @@ class Course(models.Model):
     totalMidTerms = models.IntegerField(blank=False,null=False, default=0)
     has_FinalExam = models.BooleanField(default = False, null=False)
     completionProgress = models.IntegerField(blank=False,null=False,validators=[MinValueValidator(0),MaxValueValidator(100)] ,default=0)
-    currentGrade = models.IntegerField(blank=False,null=False,validators=[MinValueValidator(-1),MaxValueValidator(100)],default=-1)
+    currentGrade = models.DecimalField(decimal_places=1,max_digits=4,blank=False,null=False,validators=[MinValueValidator(-1),MaxValueValidator(100)],default=-1)
     #finalGrade = models.IntegerField(blank=False,null=False,validators=[MinValueValidator(0),MaxValueValidator(100)],default=0)
     def __str__(self):
         return self.courseCode
@@ -108,4 +108,4 @@ class Evaluation(models.Model):
     gradeWeight = models.IntegerField(default=1, validators=[MinValueValidator(1),MaxValueValidator(100)])
     STATUS_CHOICE = [('in-progress', 'In-Progress'),('complete','Complete')]
     status = models.CharField(max_length = 50,blank=False,null=False,choices=TYPE_CHOICES, default='in-progress')
-    grade = models.IntegerField(blank=True,null=True, validators=[MinValueValidator(0),MaxValueValidator(100)], default = 0)
+    grade = models.DecimalField(decimal_places=1,max_digits=4,blank=True,null=True, validators=[MinValueValidator(0),MaxValueValidator(100)], default = 0)
