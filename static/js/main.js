@@ -15,7 +15,7 @@ function loaderTransition(){
         })
         
        
-    }, 4000);
+    }, 2000);
 }
 
 loaderTransition()

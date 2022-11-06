@@ -169,7 +169,7 @@ def courseCreation(request):
                 else:
                     evalutionGrades.append(request.POST["assignment-"+ i +"-grade"])
                     completionProgress += int(request.POST["assignment-"+ i +"-gradeWeight"])
-                    finalGrade += (int(request.POST["assignment-"+ i +"-gradeWeight"])/100) * int(request.POST["assignment-"+ i +"-grade"])
+                    finalGrade += (int(request.POST["assignment-"+ i +"-gradeWeight"])/100) * float(request.POST["assignment-"+ i +"-grade"])
                     print("assignmen")
             except:
                pass
@@ -181,7 +181,7 @@ def courseCreation(request):
                 else:
                     evalutionGrades.append(request.POST["midterm-"+ i +"-grade"])
                     completionProgress += int(request.POST["midterm-"+ i +"-gradeWeight"])
-                    finalGrade += (int(request.POST["midterm-"+ i +"-gradeWeight"])/100) * int(request.POST["midterm-"+ i +"-grade"])
+                    finalGrade += (int(request.POST["midterm-"+ i +"-gradeWeight"])/100) * float(request.POST["midterm-"+ i +"-grade"])
                     print("midterm")
             except:
                pass
@@ -191,15 +191,15 @@ def courseCreation(request):
             if request.POST["finalExamGrade"] != "":
                 evalutionGrades.append(request.POST["finalExamGrade"])
                 completionProgress += int(request.POST["finalExamGradeWeight"])
-                finalGrade += (int(request.POST["finalExamGradeWeight"])/100) * int(request.POST["finalExamGrade"]) 
+                finalGrade += (int(request.POST["finalExamGradeWeight"])/100) * float(request.POST["finalExamGrade"]) 
                 print("final exam")
                 #set current grade as -1, since a grade for final exam means student has completed course
                 currentGrade = -1
             else:
-                currentGrade = sum(map(int,evalutionGrades))/len(evalutionGrades)
+                currentGrade = sum(map(float,evalutionGrades))/len(evalutionGrades)
                 finalGrade = -1   
         except Exception as e:
-            currentGrade = sum(map(int,evalutionGrades))/len(evalutionGrades)
+            currentGrade = sum(map(float,evalutionGrades))/len(evalutionGrades)
             finalGrade = -1
             print(e)
             
@@ -249,7 +249,7 @@ def courseCreation(request):
             'courseCode':request.POST['courseCode'],
             'numOfCredits': request.POST['numOfCredits'],
             'currentGrade': currentGrade, 'completionProgress' : int(completionProgress),
-            'finalGrade' : finalGrade}
+            'finalGrade' : "".format({":1f"},finalGrade)}
         
         try:
             courseDict["totalAssignments"] = len(request.POST.getlist('assignment-counter'))
@@ -271,7 +271,12 @@ def courseCreation(request):
             return render (request, 'create_course.html')
 
         courseDict["owner"] = request.user.id
-        form = CourseForm(courseDict)
+        if request.POST["courseID"]:
+            instance = Course.objects.get(id=request.POST["courseID"])
+            form = CourseForm(courseDict,instance=instance)
+        else:
+            form = CourseForm(courseDict)
+
         
         print("prining course...before")
         print(courseDict)
@@ -279,6 +284,7 @@ def courseCreation(request):
             print("course valid")
             print(courseDict)
             course = form.save()
+            
             courseCreationSuccessful = True
         else:
             courseCreationSuccessful = False
@@ -298,12 +304,18 @@ def courseCreation(request):
             except:
                 pass
             assignmentDict['type'] = "assignment"
-            form = EvaluationForm(assignmentDict)
+            if request.POST["assignment-"+ i +"-id"] != "":
+                instance = Evaluation.objects.get(id=request.POST["assignment-"+ i +"-id"])
+                form = EvaluationForm(assignmentDict,instance=instance)
+            else:
+                form = EvaluationForm(assignmentDict)
             print("assignment Validation")
             print(assignmentDict)
             if form.is_valid():
                 print("assignment valid")
-                form.save() 
+                
+                form.save()
+                
 
         midtermDict ={}
         midtermDict['course'] = course.id
@@ -317,11 +329,18 @@ def courseCreation(request):
                 except:
                     pass
                 midtermDict['type'] = "midterm"
-                form = EvaluationForm(midtermDict)
+                
+                if request.POST["midterm-"+ i +"-id"] !="":
+                    instance = Evaluation.objects.get(id=request.POST["midterm-"+ i +"-id"])
+                    form = EvaluationForm(midtermDict,instance=instance)
+                    
+                else:
+                    form = EvaluationForm(midtermDict)
                 print("midterm Validation")
                 print(midtermDict)
                 if form.is_valid():
                     print("midterm valid")
+                   
                     form.save()
         except:
             print("no midterm")
@@ -340,12 +359,18 @@ def courseCreation(request):
                 except:
                     pass
                 finalExamDict['type'] = "finalexam"
-                form = EvaluationForm(finalExamDict)
+                if request.POST["finalexam-id"] !="":
+                    instance = Evaluation.objects.get(id=request.POST["finalexam-id"])
+                    form = EvaluationForm(finalExamDict,instance=instance)
+                else:
+                    form = EvaluationForm(finalExamDict)
                 print("finalExam Validation")
                 print(finalExamDict)
                 if form.is_valid():
                     print("finalExam valid")
+                    
                     form.save()
+                    
         except:
             print("no final exam")
             
@@ -425,7 +450,7 @@ def editCourse(request,pk):
     courseData = JSONRenderer().render(courseData).decode()
     print(courseData)
 
-    context = {'course': courseData}
+    context = {'courseData': courseData, 'course': course}
     return render(request, 'createCourse_edit.html',context)
 
 

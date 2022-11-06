@@ -1,0 +1,31 @@
+{
+    "id":"136075ac-9303-42fa-a4e4-ebe8ce6d16ac",
+    "evaluation":[
+        {"id":"c0603801-4649-481e-9646-e47fae716356",
+        "date":"2022-11-02T00:00:00Z",
+        "type":"assignment",
+        "subtasks":null,
+        "gradeWeight":50,
+        "status":"in-progress",
+        "grade":"88.0",
+        "course":"136075ac-9303-42fa-a4e4-ebe8ce6d16ac"},
+        
+        {"id":"252535fc-3461-4c14-9a63-b8fdcce21917",
+        "date":"2022-10-30T00:00:00Z",
+        "type":"midterm",
+        "subtasks":null,
+        "gradeWeight":50,
+        "status":"in-progress",
+        "grade":"70.0",
+        "course":"136075ac-9303-42fa-a4e4-ebe8ce6d16ac"}],
+
+        "finalGrade":"-1.0",
+        "courseName":"IoT",
+        "courseCode":"COMP10032",
+        "numOfCredits":5,
+        "totalAssignments":1,
+        "totalMidTerms":1,
+        "has_FinalExam":false,
+        "completionProgress":100,
+        "currentGrade":"79.0",
+        "owner":"1f9e0b08-4dea-42d5-bccd-f0a113a2a0ca"}

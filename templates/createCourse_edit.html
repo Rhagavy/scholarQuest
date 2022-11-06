@@ -17,7 +17,7 @@
       integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
       crossorigin="anonymous"
     ></script>
-    <script src="{% static 'js/script.js'%}" defer></script>
+    <script src="{% static 'js/script.js'%}"></script>
     <link href="{% static 'css/stylesheet.css' %}" rel="stylesheet" type="text/css">
     <style>
       ::placeholder {
@@ -86,8 +86,7 @@
       <div id="alerts">
 
       </div>
-      <input type="text" id="abc"/>
-    
+      
       {% if messages %}
         <div class="container mt-5">
           {% for message in messages %}
@@ -108,6 +107,17 @@
       <h2 class="pb-2" style="color: white"><u>Update Course</u></h2>
       <form id="course-form" action="{% url 'createCourse' %}" method="POST" autocomplete="on">
         {% csrf_token %}
+        <input
+              type="text"
+              class="form-control border rounded px-1 whiteText"
+              id="course-name"
+              placeholder="Course Name"
+              required
+              hidden
+              name="courseID"
+              value="{{course.id}}"
+            />
+
         <div class="mb-3 row">
           <label for="course-name" class="col-sm-2 col-form-label"
             style="color: white;">Course Name:</label
@@ -271,8 +281,46 @@
       </form>
     </div>
     <script >
-        let abc = JSON.stringify({{course|safe}})
-        document.getElementById("abc").value = abc;
+        let course_js = JSON.parse(JSON.stringify({{courseData|safe}}))
+        console.log(JSON.stringify(course_js));
+        console.log(course_js);
+       //ternary operator ex: {e?e.grade:""}
+        for (let i in course_js.evaluation){
+          
+          if(course_js.evaluation[i].type === "assignment"){
+            addAssignment(course_js.evaluation[i]);
+            let aid = getAssignmentID();
+            if(course_js.evaluation[i].subtasks){
+              let stList = course_js.evaluation[i].subtasks.split("\n");
+              for(let i in stList){
+                addSubtask(aid,stList[i]);
+              }
+              
+            }
+
+          } else if (course_js.evaluation[i].type === "midterm"){
+            alert("adding midterm");
+            addMidterm(course_js.evaluation[i]);
+            let mid = getMidtermID();
+            if(course_js.evaluation[i].subtasks){
+              let stList = course_js.evaluation[i].subtasks.split("\n");
+              for(let i in stList){
+                addMidtermMaterials(mid,stList[i]);
+              }
+              
+            }
+          } else if (course_js.evaluation[i].type === "finalexam"){
+            addFinalExam(course_js.evaluation[i]);
+            if(course_js.evaluation[i].subtasks){
+              let stList = course_js.evaluation[i].subtasks.split("\n");
+              for(let i in stList){
+                addFinalExamMaterials(stList[i]);
+              }
+              
+            }
+          }
+
+        }
 
       const form1 = document.querySelector("#course-form");
   

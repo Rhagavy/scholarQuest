@@ -209,15 +209,20 @@ function showAccordion(accordionID) {
   }).show();
 }
 
-const getRandomString = () => Math.random().toString(36).slice(2);
+function getRandomString(){
+  return Math.random().toString(36).slice(2);
+}
+//const getRandomString = () => Math.random().toString(36).slice(2);
 
-function addAssignment() {
+var nid = 0;
+function addAssignment(e) {
   let newAssignmentID = 1;
   Array.from(document.querySelector("#assignments").children).forEach(
     (assignment) =>
       parseInt(assignment.dataset.id) >= newAssignmentID &&
       (newAssignmentID = parseInt(assignment.dataset.id) + 1)
   );
+  nid = newAssignmentID
   let content = `<div
   class="accordion accordion-flush"
   id="assignment${newAssignmentID}-accordion" data-id="${newAssignmentID}"
@@ -243,6 +248,7 @@ function addAssignment() {
     </h3>
     <div class="accordion-body">
       <input hidden name="assignment-counter" value="${newAssignmentID}"/>
+      <input hidden name="assignment-${newAssignmentID}-id" value="${e?e.id:""}"/>
       <div
         class="accordion-collapse collapse show"
         id="assignment${newAssignmentID}-collapse"
@@ -263,6 +269,7 @@ function addAssignment() {
               min="0"
               max="100"
               name="assignment-${newAssignmentID}-grade"
+              value="${e?e.grade:""}"
             />
           </div>
         </div>
@@ -272,6 +279,9 @@ function addAssignment() {
           <label for="assignment${newAssignmentID}-due-date" class="col-sm-2 col-form-label"
             >Due Date:</label
           >
+          <script>
+
+          </script>
           <div class="col-sm-5">
             <input
               type="date"
@@ -280,6 +290,7 @@ function addAssignment() {
               placeholder="Due Date"
               required
               name="assignment-${newAssignmentID}-date"
+              value="${e?e.date.slice(0,10):""}"
             />
           </div>
         </div>
@@ -299,6 +310,7 @@ function addAssignment() {
               min="1"
               max="100"
               name="assignment-${newAssignmentID}-gradeWeight"
+              value="${e?e.gradeWeight:""}"
             />
           </div>
         </div>
@@ -350,6 +362,13 @@ function addAssignment() {
   ).length;
 }
 
+function getAssignmentID(){
+  return nid;
+}
+function getMidtermID(){
+  return mid;
+}
+
 function removeAssignment(assignmentID) {
   document
     .querySelector("#assignments")
@@ -361,7 +380,7 @@ function removeAssignment(assignmentID) {
   ).length;
 }
 
-function addSubtask(assignmentID) {
+function addSubtask(assignmentID,subtaskValue) {
   let randomID = getRandomString();
   let content = `<div class="mb-3 row subtask">
   <label
@@ -376,6 +395,7 @@ function addSubtask(assignmentID) {
   id="assignment${assignmentID}-subtask-${randomID}"
   placeholder="Subtask"
   name="assignment-${assignmentID}-subTask"
+  value="${subtaskValue?subtaskValue:""}"
   />
   </div>
   <div class="col-sm-1 align-right">
@@ -392,14 +412,16 @@ function addSubtask(assignmentID) {
     .querySelector(`#assignment${assignmentID}-subtasks-collapse`)
     .insertAdjacentHTML("beforeend", content);
 }
-
-function addMidterm() {
+var mid =0;
+function addMidterm(e) {
   let newMidtermID = 1;
   Array.from(document.querySelector("#midterms").children).forEach(
     (assignment) =>
       parseInt(assignment.dataset.id) >= newMidtermID &&
       (newMidtermID = parseInt(assignment.dataset.id) + 1)
   );
+  mid = newMidtermID;
+  
   let content = `<div
     class="accordion accordion-flush midterm"
     id="midterm${newMidtermID}-accordion"
@@ -423,6 +445,7 @@ function addMidterm() {
       </h2>
       <div class="accordion-body">
       <input hidden name="midterm-counter" value="${newMidtermID}"/>
+      <input hidden name="midterm-${newMidtermID}-id" value="${e?e.id:""}"/>
         <div
           id="midterm${newMidtermID}"
           class="accordion-collapse collapse show"
@@ -442,6 +465,7 @@ function addMidterm() {
                 id="midterm${newMidtermID}-grade"
                 
                 name="midterm-${newMidtermID}-grade"
+                value="${e?e.grade:""}"
               />
             </div>
           </div>
@@ -459,6 +483,7 @@ function addMidterm() {
                 id="midterm${newMidtermID}-date"
                 required="required"
                 name="midterm-${newMidtermID}-date"
+                value="${e?e.date.slice(0,10):""}"
               />
             </div>
           </div>
@@ -479,6 +504,7 @@ function addMidterm() {
                 required="required"
                 placeholder="Grade Weight"
                 name="midterm-${newMidtermID}-gradeWeight"
+                value="${e?e.gradeWeight:""}"
               />
             </div>
           </div>
@@ -537,7 +563,7 @@ function removeMidterm(midtermID) {
   ).length;
 }
 
-function addMidtermMaterials(midtermID) {
+function addMidtermMaterials(midtermID,materialValue) {
   let randomID = getRandomString();
   let content = `<div class="mb-3 row material">
     <label
@@ -552,6 +578,7 @@ function addMidtermMaterials(midtermID) {
         id="midterm${midtermID}-material-${randomID}"
         placeholder="Material"
         name="midterm-${midtermID}-subTask"
+        value="${materialValue?materialValue:""}"
       />
     </div>
     <div class="col-sm-1 align-right">
@@ -569,7 +596,7 @@ function addMidtermMaterials(midtermID) {
     .insertAdjacentHTML("beforeend", content);
 }
 
-function addFinalExam() {
+function addFinalExam(e) {
   let content = `<div style="display: flex; justify-content: space-between">
     <h5>Final Exam</h5>
     <div class="btn btn-light" onclick='document.querySelector("#final-exam").innerHTML = "";document.querySelector("#final-exam-add-btn").style.display = "inline-block";document.querySelector("#is-final-exam").innerText = "No"'>❌</div>
@@ -589,8 +616,10 @@ function addFinalExam() {
           max="100"
           placeholder="Leave blank if incomplete"
           name="finalExamGrade"
+          value="${e?e.grade:""}"
         />
         <input hidden name="has_FinalExam" value="True"/>
+        <input hidden name="finalexam-id" value="${e?e.id:""}"/>
       </div>
     </div>
 
@@ -605,6 +634,7 @@ function addFinalExam() {
           id="final-exam-date"
           required="required"
           name="finalExamDate"
+          value="${e?e.date.slice(0,10):""}"
         />
         <input hidden name="has_FinalExam" value="True"/>
       </div>
@@ -624,6 +654,7 @@ function addFinalExam() {
           required="required"
           placeholder="Grade Weight"
           name="finalExamGradeWeight"
+          value="${e?e.gradeWeight:""}"
         />
       </div>
     </div>
@@ -669,7 +700,7 @@ function addFinalExam() {
   document.querySelector("#is-final-exam").innerText = "Yes";
 }
 
-function addFinalExamMaterials() {
+function addFinalExamMaterials(materialValue) {
   let randomID = getRandomString();
   let content = `<div class="mb-3 row material">
         <label
@@ -684,6 +715,7 @@ function addFinalExamMaterials() {
             id="final-exam-material-${randomID}"
             placeholder="Material"
             name="finalExamMaterial"
+            value="${materialValue?materialValue:""}"
           />
         </div>
         <div class="col-sm-1 align-right">
