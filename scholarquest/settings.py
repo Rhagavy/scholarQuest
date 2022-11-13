@@ -158,8 +158,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'programmingemail7@gmail.com'
 EMAIL_HOST_PASSWORD = 'tcjjetjntwboqscl'
 
-LOGIN_REDIRECT_URL = "home"
+# LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "login"
+LOGIN_URL = "login"
 
 # Django rest framework
 # REST_FRAMEWORK = {
@@ -167,3 +168,5 @@ LOGOUT_REDIRECT_URL = "login"
 #         'rest_framework.authentication.SessionAuthentication'
 #     ]
 # }
+
+USE_TZ = False

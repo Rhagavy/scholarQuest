@@ -104,19 +104,18 @@
           {% endfor %}
         </div>
       {% endif %}
-      <h2 class="pb-2" style="color: white"><u>Update Course</u></h2>
+      <h2 class="pb-2" style="color: white"><u>{{pageHeader}}</u></h2>
       <form id="course-form" action="{% url 'createCourse' %}" method="POST" autocomplete="on">
         {% csrf_token %}
         <input
               type="text"
               class="form-control border rounded px-1 whiteText"
-              id="course-name"
-              placeholder="Course Name"
-              required
+              id="course-ID"
+              placeholder="Course ID"
               hidden
               name="courseID"
-              value="{{course.id}}"
-            />
+              value="{% firstof course.id '' %}"
+        />
 
         <div class="mb-3 row">
           <label for="course-name" class="col-sm-2 col-form-label"

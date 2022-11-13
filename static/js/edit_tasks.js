@@ -2,6 +2,7 @@ let inputSubTasks = document.getElementsByClassName("subtask")
 //console.log(inputSubTasks.length)
 //$('.delete-subtask').on('click', deleteSubTask);
 
+//deletes the subtask: input box and button (sibling)
 function deleteSubTask(){
 
     console.log("clicked")
@@ -24,7 +25,7 @@ function deleteSubTask(){
 
 $('.add').on('click', addSubtaskInput);
 let subTaskList = document.getElementById("subTaskList")
-
+//appends a subtask to the existing subtask list
 function addSubtaskInput(e){
     let randomID = getRandomString();
     e.preventDefault();

@@ -177,7 +177,7 @@ const form = document.querySelector("#course-form");
 //   // };
 // }
 
-//remove the fields
+//clear the input fields when reset is clicked
 form.addEventListener("reset", (e) => {
   document.querySelector("#assignments").innerHTML = "";
   document.querySelector("#midterms").innerHTML = "";
@@ -208,13 +208,15 @@ function showAccordion(accordionID) {
     toggle: false,
   }).show();
 }
-
+//used to give a random string as id for subtasks/material covered for evaluations
 function getRandomString(){
   return Math.random().toString(36).slice(2);
 }
 //const getRandomString = () => Math.random().toString(36).slice(2);
-
+//stores assignment id so that it can be returned when it's needed in edit course page
 var nid = 0;
+
+//adds an assignment to the form with a new assignment id
 function addAssignment(e) {
   let newAssignmentID = 1;
   Array.from(document.querySelector("#assignments").children).forEach(
@@ -361,14 +363,14 @@ function addAssignment(e) {
     document.querySelector("#assignments").children
   ).length;
 }
-
+//returns assigment id that's needed in edit course page
 function getAssignmentID(){
   return nid;
 }
 function getMidtermID(){
   return mid;
 }
-
+//removes an assignment from page
 function removeAssignment(assignmentID) {
   document
     .querySelector("#assignments")
@@ -379,7 +381,9 @@ function removeAssignment(assignmentID) {
     document.querySelector("#assignments").children
   ).length;
 }
-
+//adds subtasks to an assignment with an random string id associated with it
+//assignment id is used to know which assignment the subtask is added to
+//subtaskValue is the content the and already existing subtask already has in an assignment(for editing)
 function addSubtask(assignmentID,subtaskValue) {
   let randomID = getRandomString();
   let content = `<div class="mb-3 row subtask">
@@ -412,7 +416,10 @@ function addSubtask(assignmentID,subtaskValue) {
     .querySelector(`#assignment${assignmentID}-subtasks-collapse`)
     .insertAdjacentHTML("beforeend", content);
 }
+//variable is used to return a specific midterm id for the edit page
 var mid =0;
+
+//adds an midterm to the form with a new midterm id
 function addMidterm(e) {
   let newMidtermID = 1;
   Array.from(document.querySelector("#midterms").children).forEach(
@@ -553,7 +560,7 @@ function addMidterm(e) {
     document.querySelector("#midterms").children
   ).length;
 }
-
+//removes a specfic from midterm section
 function removeMidterm(midtermID) {
   document
     .querySelector("#midterms")

@@ -1,7 +1,7 @@
 const loader = document.querySelector('.loader');
 const content = document.querySelector('.homeContent');
 const nav = document.querySelector('.navbar1');
-
+//page loader for home page
 function loaderTransition(){
     setTimeout(() => {
         loader.style.opacity = 0;

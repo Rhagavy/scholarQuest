@@ -16,11 +16,13 @@
         <nav>
             <ul class="nav_links">
                 {% if request.user.is_authenticated  %}
-                <li><a href="#">Dashboard</a></li>
+                <<li><a href="{% url 'userDash' %}">Dashboard</a></li>
                 <li><a href="{% url 'createCourse' %}">Create Course</a></li>
                 <li><a href="{% url 'importantDates' %}">Important Dates</a></li>
                 <li><a href="#">Forum</a></li>
                 <li><a href="{% url 'profile' request.user.id %}">Profile</a></li>
+                <li><a href="{% url 'currentCourses' %}">Current Course</a></li>
+                <li><a href="{% url 'gpaCalculator' %}">GPA Calculator</a></li>
                 {% else %}
                 <li><a href="{% url 'home' %}">Home</a></li>
                 <li><a href="#">About Us</a></li>

@@ -26,11 +26,6 @@
             <div id="subTaskList">
                 <script>
                     let getRandomString1 = () => Math.random().toString(36).slice(2);
-                </script>
-                {% with e.subtasks|split_subtasks as subtasks %}
-                {% for st in subtasks %}
-                <script>
-                    //let getRandomString1 = () => Math.random().toString(36).slice(2);
 
                     function deleteSubTask(element){
 
@@ -56,6 +51,14 @@
                                         </div>`;
                         $('#subTaskList').append(inputHtml);
                     }
+
+                </script>
+                {% with e.subtasks|split_subtasks as subtasks %}
+                {% for st in subtasks %}
+                <script>
+                    //let getRandomString1 = () => Math.random().toString(36).slice(2);
+
+                    
                     addSubtaskInput("{{st}}")
                     
                 </script>

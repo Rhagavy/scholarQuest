@@ -4,7 +4,22 @@ from multiprocessing import context
 from pyexpat import model
 import re
 from django.shortcuts import render, redirect
-from .models import Course, Evaluation, User
+from django.urls import resolve
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import views as auth_views
+
+from django.http import HttpResponseNotFound
+
+import matplotlib.pyplot as plt
+import base64
+from io import BytesIO
+from django.db.models import Count
+
+import pandas as pd
+import seaborn as sns
+
+from .models import Course, Evaluation, User, UserTracking
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.template.defaulttags import register
@@ -17,7 +32,8 @@ from rest_framework.renderers import JSONRenderer
 # from django import template
   
 # register= template.Library()
-#split 
+#this custom filter is needed to split subtasks based on "\n" character into individual
+#subtasks
 @register.filter(name='split_subtasks')
 def split_subtasks(value):
     """
@@ -35,14 +51,27 @@ def split_subtasks(value):
 #Don't need this filt since python by default will split by /n
 
 # Create your views here.
+
+def defaultPage(request,regex1=''):
+    return redirect('/')
+
 #home page
 def homePage(request):
     return render(request,'index.html')
 
 
 
-def loginPage(request):
-
+def loginPage(request,next=''):
+    #check to see if user is coming from another page
+    print("printing request.GET")
+    print(request.GET)
+    print("printing request.POST")
+    print(request.POST)
+    try:
+        next = request.GET['next']
+    except Exception as e:
+        print("printing error")
+        print(e)
     #if request.user.is_authenticated:
         #return redirect('homePage')
     
@@ -64,13 +93,19 @@ def loginPage(request):
 
         #check if autehications was successful
         if user is not None:
+            print(request.POST)
+            print("above is request.POST")
             print(user)
             login(request,user)
-            return redirect('home')
+            if next != '':
+                return redirect(next)
+            else:
+                return redirect('userDash')
         else:
             print('Email or password is incorrect')
             #add flash message  
-    return render(request, 'registration/login.html')
+    context={'next': next}
+    return render(request, 'registration/login.html',context)
 
 def logoutUser(request):
     logout(request)
@@ -106,7 +141,7 @@ def registerPage (request):
     fieldNames = {'first_name':"First Name",'last_name':"Last Name", 'username':"Forum Display Name",'dateOfBirth':"Date of Birth",'postSecondaryInstitution':"Post Secondary Institution", 'email':"Email Address", 'password1':"Password", 'password2':"Re-type Password"}
     return render(request, 'registration/register.html', {"form":form,"fieldNames":fieldNames})
 
-
+@login_required(login_url='/login/')
 def profilePage(request,pk):
     userProfile = User.objects.get(id=pk)
     context = {'profile':userProfile}
@@ -121,8 +156,9 @@ class EditedProfile(forms.ModelForm):
     last_name = forms.CharField(required=True)
     class Meta:
         model = User
-        fields = ['first_name','last_name', 'dateOfBirth','postSecondaryInstitution', 'email']    
+        fields = ['first_name','last_name', 'dateOfBirth','postSecondaryInstitution', 'email']   
 
+@login_required(login_url='/login/')
 def editProfile(request,pk):
     #userProfile = User.objects.get(id=pk)
     form = EditedProfile(request.POST, instance = request.user)
@@ -134,7 +170,7 @@ def editProfile(request,pk):
         return redirect('profile', request.user.id)
     #PSI = array of Post Secondary Institution - is at the bottom of page
     context = {'PSI' : PSI}
-    #do I need a seperate form with only the particular editable fields?
+    
     return render (request, 'edit_profile.html', context)
 
 class CourseForm(forms.ModelForm):
@@ -146,12 +182,56 @@ class EvaluationForm(forms.ModelForm):
     class Meta:
         model = Evaluation
         fields = ['course','date','type','subtasks','gradeWeight','grade']
+        
+#both serializers are needed to pass json data of course in update course page, 
+#so that we can load a student's current courses in the front-end
+class EvaluationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Evaluation
+        fields = '__all__'
 
-def courseCreation(request):
+class CourseSerializer(serializers.ModelSerializer):
+    evaluation = serializers.SerializerMethodField()
+    class Meta:
+        model = Course
+        fields = '__all__'
+
+    def get_evaluation(self, obj):
+        evaluation_query = Evaluation.objects.filter(course=obj.id)
+
+        #print(evaluation_query)
+        serializer = EvaluationSerializer(evaluation_query,many=True)
+        #print(serializer.data)
+        return serializer.data
+
+@login_required(login_url='/login/')
+def create_or_update_course(request,pk=None):
     # 'courseName': ['Intro'], 'courseCode': ['COMP1001'], 'numOfCredits': ['4'], 'assignment[1][date]': ['2022-09-13'], 'assignment[1][gradeWeight]': ['20'], 'assignment[1][subTask][]': ['finish page', 'finish title'], 'assignment[2][date]': ['2022-09-05'], 'assignment[2][gradeWeight]': ['4'], 
     # 'assignment[2][subTask][]': ['finish tomorrow']
     print(request.POST)
-    print("I was here")
+    print(request.path)
+    #get the page url
+    current_url = resolve(request.path_info).url_name
+    print(current_url)
+    #assign page header so the page title can be changed accordingly
+    if current_url == "createCourse":
+        pageHeader = "Create Course"
+        
+    elif current_url == "editCourse":
+        pageHeader = "Update Course"
+        try:
+            course = Course.objects.filter(owner = request.user).get(id=pk)
+        except Exception as e:
+            return HttpResponseNotFound("Page not found")
+        
+        courseData = CourseSerializer(course).data
+        courseData = JSONRenderer().render(courseData).decode()
+        print(courseData)
+
+        context = {'courseData': courseData, 'course': course, 'pageHeader':pageHeader}
+        return render(request, 'createCourse_edit.html',context)
+    
+
     courseCreationSuccessful = False
     
     if(request.method == "POST"):
@@ -222,7 +302,7 @@ def courseCreation(request):
             pass
         try:
             for j in request.POST.getlist('midterm-counter'):
-                totalGradeWeight += int(request.POST["midterm-"+ i +"-gradeWeight"])
+                totalGradeWeight += int(request.POST["midterm-"+ j +"-gradeWeight"])
         except:
             pass
         #why is this not in a try except as well?
@@ -250,7 +330,7 @@ def courseCreation(request):
             'numOfCredits': request.POST['numOfCredits'],
             'currentGrade': currentGrade, 'completionProgress' : int(completionProgress),
             'finalGrade' : "".format({":1f"},finalGrade)}
-        
+        #get total evaluation amount for each type
         try:
             courseDict["totalAssignments"] = len(request.POST.getlist('assignment-counter'))
         except:
@@ -271,7 +351,7 @@ def courseCreation(request):
             return render (request, 'create_course.html')
 
         courseDict["owner"] = request.user.id
-        if request.POST["courseID"]:
+        if request.POST["courseID"] != '':
             instance = Course.objects.get(id=request.POST["courseID"])
             form = CourseForm(courseDict,instance=instance)
         else:
@@ -280,6 +360,7 @@ def courseCreation(request):
         
         print("prining course...before")
         print(courseDict)
+        #check to see if course entered id valid based on CourseForm form object and assign successful flag
         if form.is_valid():
             print("course valid")
             print(courseDict)
@@ -290,20 +371,24 @@ def courseCreation(request):
             courseCreationSuccessful = False
             
         # ---------------------------------
+        #dictionary that holds all assignments
         assignmentDict= {}
         assignmentDict['course'] = course.id
-
+        #loop through and add assignment information
         for i in request.POST.getlist('assignment-counter'):
             assignmentDict['date'] = request.POST["assignment-"+ i +"-date"]
             assignmentDict['gradeWeight'] = request.POST["assignment-"+ i +"-gradeWeight"]
             assignmentDict['grade'] = request.POST["assignment-"+ i +"-grade"]
             print("Assignment Grade")
             print(request.POST["assignment-"+ i +"-grade"])
+            #all subtasks are added together with a '\n', to indicate start and end points
             try:
                 assignmentDict['subtasks'] = "\n".join(request.POST.getlist("assignment-"+ i +"-subTask"))
             except:
                 pass
+
             assignmentDict['type'] = "assignment"
+            #assignment is not empty then it's an already existing assignment that needs to be updates
             if request.POST["assignment-"+ i +"-id"] != "":
                 instance = Evaluation.objects.get(id=request.POST["assignment-"+ i +"-id"])
                 form = EvaluationForm(assignmentDict,instance=instance)
@@ -311,16 +396,18 @@ def courseCreation(request):
                 form = EvaluationForm(assignmentDict)
             print("assignment Validation")
             print(assignmentDict)
+            #check if input fields are valid against model 
             if form.is_valid():
                 print("assignment valid")
                 
                 form.save()
                 
-
+        #holds midterm details
         midtermDict ={}
         midtermDict['course'] = course.id
+        #loop through all midterms and add information to dictionary
         try:
-            for j in request.POST.getlist('midterm-counter'):
+            for i in request.POST.getlist('midterm-counter'):
                 midtermDict['date'] = request.POST["midterm-"+ i +"-date"]
                 midtermDict['gradeWeight'] = request.POST["midterm-"+ i +"-gradeWeight"]
                 midtermDict['grade'] = request.POST["midterm-"+ i +"-grade"]
@@ -344,9 +431,10 @@ def courseCreation(request):
                     form.save()
         except:
             print("no midterm")
-
+        #hold final exam details
         finalExamDict = {}
         finalExamDict['course'] = course.id
+        #grab information from POST and store into dictionary
         try:
             if courseDict["has_FinalExam"]:
                 finalExamDict['date'] = request.POST["finalExamDate"]
@@ -373,7 +461,7 @@ def courseCreation(request):
                     
         except:
             print("no final exam")
-            
+        #assign message based on course creation
         if courseCreationSuccessful:
             messages.success(request,"Course added successfully!")
         else:
@@ -390,14 +478,17 @@ def courseCreation(request):
     #print(assignments)
     #midterms = [k for k in request.POST.keys() if k.startswith('midterm')]
     #print(midterms)
-    
-    return render (request, 'create_course.html')
 
+    #pass it as context so page can be updated with appropriate title
+    context = {'pageHeader':pageHeader}
+    return render (request, 'createCourse_edit.html',context)
+
+#filter returns evaluation based on type given
 @register.filter
 def get_evaluation_by_type(course,type):
 
     return course.evaluation_set.filter(type=type)
-
+#
 @register.filter
 def checking_type(course,type):
     if course.evaluation_set.filter(type=type):
@@ -411,7 +502,9 @@ def checking_type(course,type):
         
 
 #sk is search key
+@login_required(login_url='/login/')
 def currentCourse(request, sk=""):
+    #get courses based on whether search key is empty or not
     if sk == "":
         courses = Course.objects.filter(owner = request.user.id)
     else:
@@ -421,37 +514,52 @@ def currentCourse(request, sk=""):
 
     return render (request, 'current_course.html',context)
 
-
-class EvaluationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Evaluation
-        fields = '__all__'
-
-class CourseSerializer(serializers.ModelSerializer):
-    evaluation = serializers.SerializerMethodField()
-    class Meta:
-        model = Course
-        fields = '__all__'
-
-    def get_evaluation(self, obj):
-        evaluation_query = Evaluation.objects.filter(course=obj.id)
-
-        #print(evaluation_query)
-        serializer = EvaluationSerializer(evaluation_query,many=True)
-        #print(serializer.data)
-        return serializer.data
-
-
-
-def editCourse(request,pk):
-    course = Course.objects.filter(owner = request.user).get(id=pk)
+@login_required(login_url='/login/')
+def deleteCourse(request,pk=''):
+    print(request.POST)
+    if pk != '':
+        course = Course.objects.get(id=pk)
     
-    courseData = CourseSerializer(course).data
-    courseData = JSONRenderer().render(courseData).decode()
-    print(courseData)
+    if request.method =='POST':
+        #check which button was clicked since value is passed in POST request
+        if 'confirmDeletion' in request.POST:
+            course.delete()
+            messages.success(request, "{} has been successfully deleted!".format(course.courseCode))
+            return redirect('/current-courses/')
+        elif 'cancelDeletion' in request.POST:
+            messages.success(request, "{} has not been deleted".format(course.courseCode))
+            return redirect('/current-courses/')
+    #pass the course the user selected to delete   
+    context = {'course' : course}
 
-    context = {'courseData': courseData, 'course': course}
-    return render(request, 'createCourse_edit.html',context)
+    return render(request, 'delete_course_confirmation.html', context)
+
+#views that are only accessible by admin (staff_member)
+#@staff_member_required()
+def currentUsageReports(request):
+    graph = institution_plot_view()
+
+    context={'chart': graph}
+
+    return render(request, 'usage_report_page.html',context)
+#@staff_member_required
+def createUsageReport(request):
+    return render(request, 'create_usage_report.html')
+#@staff_member_required
+def deleteUsageReport (request):
+    return render(request, 'delete_usage_report.html')
+
+
+
+# def editCourse(request,pk):
+#     course = Course.objects.filter(owner = request.user).get(id=pk)
+    
+#     courseData = CourseSerializer(course).data
+#     courseData = JSONRenderer().render(courseData).decode()
+#     print(courseData)
+
+#     context = {'courseData': courseData, 'course': course}
+#     return render(request, 'createCourse_edit.html',context)
 
 
 
@@ -459,13 +567,14 @@ def editCourse(request,pk):
 def get_value(dictionary, key):
     return dictionary.get(key)
 
+@login_required(login_url='/login/')
 def userDash(request):
     courses = Course.objects.filter(owner = request.user.id)
     context = {'courses':courses}
     return render (request, 'user_dashboard.html', context)
 
 
-
+@login_required(login_url='/login/')
 def importantDates(request,frq='all'):
     print(frq)
     courses = Course.objects.filter(owner = request.user.id)
@@ -514,6 +623,7 @@ def importantDates(request,frq='all'):
     context = {'courses': courses, 'evs': evs}
     return render(request,'important_dates.html', context)
 
+@login_required(login_url='/login/')
 def editTasks(request, pk):
 
     e = Evaluation.objects.get(id=pk)
@@ -532,6 +642,72 @@ def editTasks(request, pk):
         print("success")
         return redirect('importantDates')
     return render(request, 'edit_tasks.html', context)
+
+@login_required(login_url='/login/')
+def gpaCalculatorPage(request):
+    return render(request, 'gpa_calculator.html')
+
+def get_graph():
+ 
+    buffer = BytesIO()
+    plt.savefig(buffer, format = 'png')
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    graph = base64.b64encode(image_png)
+    graph = graph.decode('utf-8')
+    buffer.close()
+    return graph
+ 
+def institution_plot_view():
+    users = User.objects.values('postSecondaryInstitution').annotate(studentCount = Count('postSecondaryInstitution'))
+    df = pd.DataFrame(users)
+    df.sort_values(["studentCount"],inplace=True,ascending=False)
+    plt.style.use('seaborn-v0_8-whitegrid')
+    plt.figure(figsize=(8,6))
+    bp = sns.barplot(x=df["studentCount"],y=df["postSecondaryInstitution"],orient='h',hue=df["postSecondaryInstitution"], 
+    dodge = False,palette= 'Greens_r')
+    plt.legend('', frameon=False)
+    plt.ylabel("Post Secondary Intitution")
+    plt.xlabel("Number of Students")
+    print(plt.style.available)
+    plt.tight_layout()
+    graph = get_graph()
+    
+    return graph
+
+def daily_login_report(request):
+    #tsToday = time stamp
+    tsToday = datetime.today() - timedelta(days = 1)
+    loginData = UserTracking.objects.filter(timeStamp__day = tsToday.day).values()
+    df = pd.DataFrame(list(loginData))
+    
+    
+    print(df.head(22))
+    print(df.info())
+    print(df.shape)
+    print(df.tail())
+    print(tsToday)
+
+    plt.tight_layout()
+    graph = get_graph()
+    context={'chart': graph}
+    return render(request, 'graph.html',context)
+
+
+"""
+dict1 = [{"a":"23","b":3},{"a":"8","b":2},{"a":"df","b":7},{"a":"skl","b":40}]
+df=pd.DataFrame()
+df = pd.DataFrame(dict1)
+print(df.head())
+df.sort_values(["b"],inplace=True,ascending=False)
+bp = sns.barplot(x=df["b"],y=df["a"],orient='h',hue=df["a"], dodge = False,palette= 'Greens_r')
+# bp.invert_yaxis()
+bp.legend(loc='upper right', bbox_to_anchor=(1.16, 1),borderaxespad=0)
+plt.tight_layout()
+plt.savefig("graph.png",format="png")
+
+"""
+
 
 
 PSI = ['Algoma University','Algonquin College', 'Brock University', 'Cambrian College','Canadore College',

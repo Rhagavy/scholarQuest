@@ -136,9 +136,12 @@ background: linear-gradient(45deg, #C6426E, #642B73)
 .profileBack{
     background: #642B73;  /* fallback for old browsers */
     background: -webkit-linear-gradient(45deg, #C6426E, #642B73);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(45deg, #C6426E, #642B73);
+    background: linear-gradient(45deg, #C6426E, #642B73) fixed;
 }
-
+.profile{
+    font-family: 'Playfair Display', serif;
+    
+}
 /* .profileBox1{
     border-style: solid;
     border-color:  #642B73;
@@ -174,7 +177,11 @@ display: inline-block;
 .textLabel{
     margin-left:12%;
     display:inline;
-    float:left
+    float:left;
+    font-weight: bold;
+}
+.profileInfoText{
+    font-size: 1.1em !important;
 }
 .userInfo{
     text-align: center;
@@ -203,6 +210,13 @@ display: inline-block;
     right: 100px;
 }
 
+/** IMPORTANT DATE PAGE **/
+
+/* .importantDateText{
+    font-family: 'Playfair Display', serif;
+} */
+
+
 /** DASHBOARD PAGE **/
 .box1{
     
@@ -216,3 +230,27 @@ display: inline-block;
     grid-template-columns: 3fr 1fr;
     grid-template-rows: 1fr;
 }
+
+/** GPA CALCULATOR PAGE **/
+.textColour{
+    color: white;
+}
+
+
+/** ADMIN USAGE PAGE**/
+
+.adminBody{
+    background: #00B4DB;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #0083B0, #00B4DB);  /* Chrome 10-25, Safari 5.1-6* /
+    background: linear-gradient(to left, #0083B0, #00B4DB); / *W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+.adminMain{
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: 1fr;
+}
+/* .usageButtonsSection{
+     /* border: 0.5em solid white ;  */

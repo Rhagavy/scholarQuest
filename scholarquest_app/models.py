@@ -7,6 +7,9 @@ from django.contrib.auth.models import User, AbstractUser
 from ckeditor.fields import RichTextField
 from django.core.validators import MinValueValidator,MaxValueValidator
 
+from django.contrib.auth.signals import user_logged_in
+from django.dispatch import receiver
+
 # Create your models here.
 # class Admin(models.Model):
 #     id = models.UUIDField(default=uuid.uuid4, unique=True,primary_key=True,editable=False)
@@ -109,3 +112,21 @@ class Evaluation(models.Model):
     STATUS_CHOICE = [('in-progress', 'In-Progress'),('complete','Complete')]
     status = models.CharField(max_length = 50,blank=False,null=False,choices=TYPE_CHOICES, default='in-progress')
     grade = models.DecimalField(decimal_places=1,max_digits=4,blank=True,null=True, validators=[MinValueValidator(0),MaxValueValidator(100)], default = 0)
+
+
+class UserTracking(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    timeStamp = models.DateTimeField(auto_now_add=True)
+
+@receiver(user_logged_in)
+def on_login(sender, user, request, **kwargs):
+    print('User just logged in....')
+    UserTracking.objects.create(user=user)
+
+''' import datetime as dt
+a = "2022-11-10 22:11:08.815651-05"
+print(a[0:19])
+b = dt.datetime.strptime(a[0:19],'%Y-%m-%d %H:%M:%S')
+print(b.second)
+a = "2022-11-10 22:11:08.815651-0500"
+b = dt.datetime.strptime(a,"%Y-%m-%d %H:%M:%S.%f%z")'''
