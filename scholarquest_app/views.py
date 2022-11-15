@@ -15,11 +15,13 @@ import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
 from django.db.models import Count
+from calendar import monthrange
 
 import pandas as pd
 import seaborn as sns
+import numpy as np
 
-from .models import Course, Evaluation, User, UserTracking
+from .models import Course, Evaluation, User, UserTracking, UsageReport
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.template.defaulttags import register
@@ -653,12 +655,13 @@ def get_graph():
     plt.savefig(buffer, format = 'png')
     buffer.seek(0)
     image_png = buffer.getvalue()
-    graph = base64.b64encode(image_png)
-    graph = graph.decode('utf-8')
+    graph1 = base64.b64encode(image_png)
+    graph = graph1.decode('utf-8')
     buffer.close()
-    return graph
+    return graph,graph1
  
 def institution_plot_view():
+    plt.ioff()
     users = User.objects.values('postSecondaryInstitution').annotate(studentCount = Count('postSecondaryInstitution'))
     df = pd.DataFrame(users)
     df.sort_values(["studentCount"],inplace=True,ascending=False)
@@ -676,23 +679,157 @@ def institution_plot_view():
     return graph
 
 def daily_login_report(request):
+    #.ioff stops plotting graph ontop of eachother
+    plt.ioff()
+    plt.clf()
+    
     #tsToday = time stamp
-    tsToday = datetime.today() - timedelta(days = 1)
+    tsToday = datetime.today() - timedelta(days = 0)
     loginData = UserTracking.objects.filter(timeStamp__day = tsToday.day).values()
     df = pd.DataFrame(list(loginData))
+    if not (df.empty):
+
+        print(df.head())
+        #adding hour coloumn extracted from timeStamp coloumn 
+        df["hour"] = df.apply(lambda x: x.timeStamp.hour, axis=1)
+        #df = df.groupby(["hour"])["hour"].count()
+        #get the hour column and count by unique values
+        df = df["hour"].value_counts().to_frame().reset_index().set_axis(["hour","count"],axis=1)
+    else:
+        df["hour"] = pd.Series()
+    for i in range(24):
+        if i in list(df["hour"]):
+            pass
+        else:
+            df = pd.concat([df,pd.DataFrame( [{"hour":i, "count":0}])])
+    df["labels"] = df["hour"].astype(str)+":00"
     
+    bp = sns.barplot(x=df["hour"],y=df["count"])
+    plt.xticks(labels=df["labels"],ticks=df["hour"],rotation=90,fontsize=9)
+    plt.ylim(bottom=0)
     
-    print(df.head(22))
+    plt.ylabel("Login Count")
+    plt.xlabel("Hour")
+
+    # print(df.head(22))
     print(df.info())
-    print(df.shape)
-    print(df.tail())
-    print(tsToday)
+    # print(df.shape)
+    # print(df.tail())
+    # print(tsToday)
 
     plt.tight_layout()
     graph = get_graph()
     context={'chart': graph}
+    del df
     return render(request, 'graph.html',context)
 
+def monthly_login_report(request):
+    #.ioff stops plotting graph ontop of eachother
+    plt.ioff()
+    plt.clf()
+    
+    #tsToday = time stamp
+    tsToday = datetime.today() - timedelta(days = 260)
+    loginData = UserTracking.objects.filter(timeStamp__month = tsToday.month).values()
+    df = pd.DataFrame(list(loginData))
+    if not (df.empty):
+
+        
+        #adding hour coloumn extracted from timeStamp coloumn 
+        df["day"] = df.apply(lambda x: x.timeStamp.day, axis=1)
+        
+        #df = df.groupby(["hour"])["hour"].count()
+        #get the hour column and count by unique values
+        df = df["day"].value_counts().to_frame().reset_index().set_axis(["day","count"],axis=1)
+        print(df.head(30))
+    else:
+        df["day"] = pd.Series()
+    #monthrange will get output tuple: (first week day of month, # number of days in month)
+    xTicks = np.arange(1,monthrange(tsToday.year,tsToday.month)[1]+1,1)
+    print(xTicks)
+    for i in xTicks:
+        if i in list(df["day"]):
+            pass
+        else:
+            df = pd.concat([df,pd.DataFrame( [{"day":i, "count":0}])])
+    df["day"] = df["day"].astype(int)
+    print(df.info())
+    bp = sns.barplot(x=df["day"],y=df["count"])
+    plt.xticks(fontsize=9)
+    plt.ylim(bottom=0)
+    
+    plt.ylabel("Login Count")
+    plt.xlabel("Month")
+
+    # print(df.head(22))
+    print(df.info())
+    # print(df.shape)
+    # print(df.tail())
+    # print(tsToday)
+
+    plt.tight_layout()
+    graph = get_graph()
+    context={'chart': graph}
+    del df
+    return render(request, 'graph.html',context)
+
+def weekly_login_report(request):
+    #.ioff stops plotting graph ontop of eachother
+    plt.ioff()
+    plt.clf()
+    
+    #tsToday = time stamp
+    tsToday = datetime.today() - timedelta(days = 1)
+    loginData = UserTracking.objects.filter(timeStamp__week = tsToday.isocalendar()[1]).values()
+    df = pd.DataFrame(list(loginData))
+    if not (df.empty):
+
+        
+        #adding day coloumn extracted from timeStamp coloumn 
+        df["day"] = df.apply(lambda x: x.timeStamp.day, axis=1)
+        
+        #df = df.groupby(["hour"])["hour"].count()
+        #get the day column and count by unique values
+        df = df["day"].value_counts().to_frame().reset_index().set_axis(["day","count"],axis=1)
+        print(df.head(30))
+    else:
+        df["day"] = pd.Series()
+    df["label"] = pd.Series()
+
+    start = tsToday - timedelta(days=tsToday.weekday()) 
+    xTicks= []
+    for i in range(7):
+        xTicks.append(start+timedelta(days=i))
+
+    print(xTicks)
+    for i in xTicks:
+        if i.day in list(df["day"]):
+            df.loc[df['day'] == i.day, 'label'] = i.strftime('%d-%m-%Y')
+        else:
+            df = pd.concat([df,pd.DataFrame( [{"day":i.day, "count":0,"label":i.strftime('%d-%m-%Y')}])])
+    df.sort_values(["label"],inplace=True)
+    #df["day"] = df["day"].astype(int)
+    print(df.info())
+    bp = sns.barplot(x=df["label"],y=df["count"])
+    plt.xticks(fontsize=9, rotation = 45)
+    plt.ylim(bottom=0)
+    
+    plt.ylabel("Login Count")
+    plt.xlabel("Day of the Week")
+
+    # print(df.head(22))
+    print(df.info())
+    # print(df.shape)
+    # print(df.tail())
+    # print(tsToday)
+
+    plt.tight_layout()
+    graph,buffer = get_graph()
+    #UsageReport.objects.create(createdBy=request.user,type='weekly',graphImage = buffer)
+    qs = UsageReport.objects.get(id="2f5a4913-84dc-4ad6-a697-c142302cff42")
+    finalImage=base64.b64encode(qs.graphImage).decode('utf-8')
+    context={'chart': finalImage}
+    return render(request, 'graph.html',context)
 
 """
 dict1 = [{"a":"23","b":3},{"a":"8","b":2},{"a":"df","b":7},{"a":"skl","b":40}]

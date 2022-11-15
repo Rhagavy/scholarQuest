@@ -168,5 +168,5 @@ LOGIN_URL = "login"
 #         'rest_framework.authentication.SessionAuthentication'
 #     ]
 # }
-
+TIME_ZONE = "America/Toronto"
 USE_TZ = False

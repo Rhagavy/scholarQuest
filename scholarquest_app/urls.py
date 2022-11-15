@@ -23,7 +23,7 @@ urlpatterns = [
     path('delete-usage-report/', views.deleteUsageReport, name="deleteUsageReport"),
     path('create-usage-report/', views.createUsageReport, name = "createUsageReport"),
     path('gpa-calculator/', views.gpaCalculatorPage, name = "gpaCalculator"),
-    path('psi-graph/', views.daily_login_report, name="psiGraph"),
+    path('psi-graph/', views.weekly_login_report, name="psiGraph"),
     
 
     

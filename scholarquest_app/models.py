@@ -37,8 +37,11 @@ class UsageReport(models.Model):
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
     createdBy = models.ForeignKey(User,on_delete=models.DO_NOTHING)
     dateCreated = models.DateTimeField(auto_now_add=True) 
-    TYPE_CHOICES = [('daily','Daily'),('monthly','Monthly'),('institution','Institution')]
+    TYPE_CHOICES = [('daily','Daily'),('monthly','Monthly'),('institution','Institution'),('weekly','Weekly')]
     type = models.CharField(max_length=100,blank=False,null=False,choices=TYPE_CHOICES) 
+    graphImage = models.BinaryField(blank=True)
+    STATUS_CHOICES = [('deleted','Deleted'),('viewable','viewable')]
+    status =  models.CharField(max_length = 50,blank=False,null=False,choices=STATUS_CHOICES,default='viewable')
     def __str__(self):
         return self.dateCreated
 
